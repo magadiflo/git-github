@@ -114,3 +114,40 @@ Config file location
     --worktree            use per-worktree config file
 ...
 ````
+
+---
+
+# Conceptos básicos de Git
+
+---
+
+## Obtener un repositorio Git
+
+**Inicialización de un repositorio en un directorio existente**: Si tiene un directorio de proyecto que actualmente no
+está bajo control de versiones y desea comenzar a controlarlo con Git, primero debe ir al directorio de ese proyecto,
+luego ejecutar `git init`:
+
+````
+M:\PROGRAMACION\DESARROLLO_GIT\documentacion_oficial\git-github-practice
+git init
+
+Initialized empty Git repository in M:/PROGRAMACION/DESARROLLO_GIT/documentacion_oficial/git-github-practice/.git/
+````
+
+Si desea comenzar a controlar las versiones de los archivos existentes (en lugar de un directorio vacío), probablemente
+debería comenzar a rastrear esos archivos y realizar una confirmación inicial. Puedes lograrlo con algunos comandos de
+git add que especifican los archivos que deseas rastrear, seguidos de una confirmación de git:
+
+````
+git add *.c
+git add LICENSE
+git commit -m 'Initial project version'
+````
+
+**Clonando un repositorio existente**: Si desea obtener una copia de un repositorio Git existente, por ejemplo, un
+proyecto en el que le gustaría contribuir, el comando que necesita es `git clone`:
+
+````
+git clone <url>
+git clone https://github.com/magadiflo/spring-boot-git-github.git
+````
