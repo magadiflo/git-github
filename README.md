@@ -90,3 +90,27 @@ user.email=magadiflo@gmail.com
 remote.origin.url=https://github.com/magadiflo/spring-boot-git-github.git
 ...
 ````
+
+## Primeros pasos: obtener ayuda
+
+Obtener **ayuda de la página web del manual** para algún comando git, por ejemplo, para el comando `config`:
+
+````
+git config --help
+````
+
+Si solo queremos un **repaso rápido de las opciones disponibles** para un comando Git, podemos usar `-h`. Por ejemplo,
+nuevamente consultemos la **ayuda** pero esta véz **rápida** para el comando `config`:
+
+````
+git config -h
+
+usage: git config [<options>]
+
+Config file location
+    --global              use global config file
+    --system              use system config file
+    --local               use repository config file
+    --worktree            use per-worktree config file
+...
+````
