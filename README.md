@@ -457,3 +457,214 @@ Como observamos el archivo fue renombrado `(renamed)` y está en el estado de `s
 > importante aún, **puede utilizar cualquier herramienta que desee para cambiar el nombre de un archivo** y abordar el
 > add/rm más tarde, antes de confirmar.
 
+## Visualización del historial de commits
+
+### Viendo el historial de commits
+
+Ver el **historial de commits**:
+
+````bash
+$ git log
+
+commit 843428eb126d62da12ad7fda6c44dc12112bb8df
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 13:24:27 2023 -0500
+
+    Agregando archvo PROJECTS.md
+
+commit 104cb823b8b2bd8da1b1cc377a0067e559bf10fc
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 10:39:57 2023 -0500
+
+    Inicio
+````
+
+Existe una gran cantidad y variedad de opciones para el comando `git log` están disponibles para mostrarte exactamente
+lo que estás buscando. Aquí te mostraremos algunos de los más populares.
+
+El uso de`-p` o `--patch` muestra la **diferencia (salida del parche) introducida en cada commit**. También puede
+limitar la cantidad de entradas de registro que se muestran, como usar `-2` para **mostrar solo las dos últimas
+entradas:**
+
+````bash
+$ git log -p -2
+commit de7978cff269dd1f52b71692debf454f78d7180c
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 23:13:55 2023 -0500
+
+    Nuevos cambios en los archivos Markdown
+
+diff --git a/FILE.md b/FILE.md
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/MY_FILE.md b/MY_FILE.md
+new file mode 100644
+index 0000000..b9fc54e
+--- /dev/null
++++ b/MY_FILE.md
+@@ -0,0 +1 @@
++# Mi nuevo archivo
+\ No newline at end of file
+diff --git a/README.md b/README.md
+index 5873f96..021c543 100644
+--- a/README.md
++++ b/README.md
+@@ -2,8 +2,10 @@
+
+ ---
+
+-Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y GitHub`. Esta práctica la estoy
++Este proyecto está creado netamente para practicar con `Git y GitHub`. Esta práctica la estoy
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+----
+\ No newline at end of file
++---
++
++Historial de Commits
+\ No newline at end of file
+
+commit a1de54eed0176e6ff32b2804d5ed1a294a8be31b (origin/main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 20:03:44 2023 -0500
+
+    Archivo renombrado
+
+diff --git a/MY_FILE.md b/FILE.md
+similarity index 100%
+rename from MY_FILE.md
+rename to FILE.md
+````
+
+Ver algunas **estadísticas abreviadas para cada commit**, puede usar la opción `--stat`:
+
+````bash
+$ git log --stat -2
+commit de7978cff269dd1f52b71692debf454f78d7180c (HEAD -> main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 23:13:55 2023 -0500
+
+    Nuevos cambios en los archivos Markdown
+
+ FILE.md    | 0
+ MY_FILE.md | 1 +
+ README.md  | 6 ++++--
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+commit a1de54eed0176e6ff32b2804d5ed1a294a8be31b (origin/main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 20:03:44 2023 -0500
+
+    Archivo renombrado
+
+ MY_FILE.md => FILE.md | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+````
+
+Como puede ver, la opción `--stat` imprime debajo de cada entrada de confirmación una lista de archivos modificados,
+cuántos archivos se cambiaron y cuántas líneas en esos archivos se agregaron y eliminaron. También pone un resumen de la
+información al final.
+
+Mostrar la **lista de los archivos modificados** después de la información del commit:
+
+````bash
+$ git log --name-only -2
+commit de7978cff269dd1f52b71692debf454f78d7180c (HEAD -> main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 23:13:55 2023 -0500
+
+    Nuevos cambios en los archivos Markdown
+
+FILE.md
+MY_FILE.md
+README.md
+
+commit a1de54eed0176e6ff32b2804d5ed1a294a8be31b (origin/main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 20:03:44 2023 -0500
+
+    Archivo renombrado
+
+FILE.md
+````
+
+Ver cada **commit en una sola línea** usando `--pretty=oneline`:
+
+````bash
+$ git log --pretty=oneline
+de7978cff269dd1f52b71692debf454f78d7180c Nuevos cambios en los archivos Markdown
+a1de54eed0176e6ff32b2804d5ed1a294a8be31b Archivo renombrado
+1449f19a78991a1bf871821ab0be50fd8cb2c68b Archivo renombrado
+b736e0ae3ed627d1772c5fc9bbeedf92e41f9efa Nuevo archivo FILE.md
+843428eb126d62da12ad7fda6c44dc12112bb8df Agregando archvo PROJECTS.md
+104cb823b8b2bd8da1b1cc377a0067e559bf10fc Inicio
+````
+
+Ver cada **commit en una sola línea** usando `--pretty=oneline --abbrev-commit` o que es lo mismo, su equivalente
+`--oneline`:
+
+````bash
+$ git log --oneline
+de7978c (HEAD -> main, origin/main) Nuevos cambios en los archivos Markdown
+a1de54e Archivo renombrado
+1449f19 Archivo renombrado
+b736e0a Nuevo archivo FILE.md
+843428e Agregando archvo PROJECTS.md
+104cb82 Inicio
+````
+
+Especificar una **salida de formato personalizado:**
+
+````bash
+$ git log --pretty=format:"%h - %an, %ar : %s"
+de7978c - Martín, 19 minutes ago : Nuevos cambios en los archivos Markdown
+a1de54e - Martín, 4 hours ago : Archivo renombrado
+1449f19 - Martín, 4 hours ago : Archivo renombrado
+b736e0a - Martín, 4 hours ago : Nuevo archivo FILE.md
+843428e - Martín, 10 hours ago : Agregando archvo PROJECTS.md
+104cb82 - Martín, 13 hours ago : Inicio
+````
+
+Los valores de las opciones `oneline y format` son particularmente útiles con otra opción de registro llamada `--graph`.
+Esta opción agrega un pequeño y agradable gráfico ASCII que muestra su historial de branch y merge:
+
+````bash
+$ git log --pretty=format:"%h %s" --graph
+* de7978c Nuevos cambios en los archivos Markdown
+* a1de54e Archivo renombrado
+* 1449f19 Archivo renombrado
+* b736e0a Nuevo archivo FILE.md
+* 843428e Agregando archvo PROJECTS.md
+* 104cb82 Inicio
+````
+
+Ver **historial de commits** sin mostrar los **merge commits**, esto es simplemente para evitar que la visualización de
+commits de fusión abarrote su historial de logs:
+
+````bash
+$ git log --oneline --no-merges
+bc616b3 (HEAD -> feature/git-basics) Registrando cambios en el repositorio
+46b9424 Conceptos básicos: obtener un repositorio Git
+60e5b0e (origin/feature/getting-started, feature/getting-started) Primeros pasos: obtener ayuda
+5675752 Primeros pasos: configuración de git por primera vez
+17237cc Inicio
+````
+
+### Limitar la salida del Log
+
+Podemos limitar la salida a un subconjunto de commits. Ya has visto una de esas opciones: `la opción -2`, que **muestra
+solo las dos últimas confirmaciones**. De hecho, puedes hacer `-<n>`, **donde n es cualquier número entero** para
+mostrar las últimas n confirmaciones.
+
+Ver la **lista de commits** realizadas en las últimas dos semanas:
+
+````bash
+$ git log --since=2.weeks
+commit de7978cff269dd1f52b71692debf454f78d7180c (HEAD -> main, origin/main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 23:13:55 2023 -0500
+
+    Nuevos cambios en los archivos Markdown
+....
+````
