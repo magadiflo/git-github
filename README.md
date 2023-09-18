@@ -850,3 +850,28 @@ $ git remote -v
 origin  https://github.com/magadiflo/git-github-practice.git (fetch)
 origin  https://github.com/magadiflo/git-github-practice.git (push)
 ````
+
+### Agregar repositorio remoto
+
+Para **agregar un nuevo repositorio remoto Git** como un nombre corto al que pueda hacer referencia fácilmente, ejecute
+`git remote add <shortname> <url>`:
+
+````bash
+$ git remote
+origin
+
+$ git remote add pb https://github.com/paulboone/ticgit
+
+$ git remote -v
+origin	https://github.com/schacon/ticgit (fetch)
+origin	https://github.com/schacon/ticgit (push)
+pb	https://github.com/paulboone/ticgit (fetch)
+pb	https://github.com/paulboone/ticgit (push)
+````
+
+Ahora puedes usar la cadena `pb` en la línea de comando en lugar de la URL completa.
+
+**NOTA**
+> Recordar que cuando creamos un repositorio local y luego queremos vincularlo a un repositorio remoto recién creado
+> utilizamos el comando: `git remote add origin <url>`
+
