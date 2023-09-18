@@ -668,3 +668,90 @@ Date:   Fri Sep 15 23:13:55 2023 -0500
     Nuevos cambios en los archivos Markdown
 ....
 ````
+
+## Deshacer cosas
+
+**Rehacer el commit anterior** usando la opción `--amend`. En el ejemplo siguiente, hemos realizado cambios
+en los archivos PROJECTS.md y README.md y queremos hacer un commit de ellos:
+
+````bash
+$ git status -s -b
+## main...origin/main
+ M PROJECTS.md
+ M README.md
+
+$ git add .
+
+$ git commit -m "Modificando archivos: README.md y PROJECTS.md"
+[main 36ae970] Modificando archivos: README.md y PROJECTS.md
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+$ git log --name-only -2
+commit 36ae970848ade5b660e97dfb1284d6ac2d59a4d3 (HEAD -> main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Mon Sep 18 11:15:44 2023 -0500
+
+    Modificando archivos: README.md y PROJECTS.md
+
+PROJECTS.md
+README.md
+
+commit b736e0ae3ed627d1772c5fc9bbeedf92e41f9efa (origin/main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 19:49:33 2023 -0500
+
+    Nuevo archivo FILE.md
+
+FILE.md
+````
+
+A partir de aquí nos damos cuenta de que **nos olvidamos de agregar un cambio, por ejemplo, nos olvidamos de agregar
+el archivo HISTORY.md y además el mensaje del commit no era el que queríamos**, por lo que procedemos a realizar lo
+siguiente:
+
+````bash
+$ git status -s -b
+?? HISTORY.md
+
+$ git add .
+
+$ git commit --amend -m "Modificando archivos: README.md y PROJECTS.md - Agregando archivo HISTORY.md"
+[main 306d52b] Modificando archivos: README.md y PROJECTS.md - Agregando archivo HISTORY.md
+ Date: Mon Sep 18 11:15:44 2023 -0500
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+ create mode 100644 HISTORY.md
+ 
+$ git log --name-only -2
+commit 306d52b2973c845159037963075d9a10f496f729 (HEAD -> main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Mon Sep 18 11:15:44 2023 -0500
+
+    Modificando archivos: README.md y PROJECTS.md - Agregando archivo HISTORY.md
+
+HISTORY.md
+PROJECTS.md
+README.md
+
+commit b736e0ae3ed627d1772c5fc9bbeedf92e41f9efa (origin/main)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 19:49:33 2023 -0500
+
+    Nuevo archivo FILE.md
+
+FILE.md
+````
+
+Como observamos al usar el comando `git commit --amend -m "Modificando archivos: README.md y PROJ...."` **justo después
+del commit anterior** lo que hace es **modificar el mensaje del commit anterior** y adicionalmente colocar el archivo
+HISTORY.md que nos olvidamos agregar en el commit anterior. Por lo que, si revisamos el último commit veremos que
+ya está nuestro nuevo mensaje y además también está el archivo HISTORY.md como parte del snapshot.
+
+**NOTA**
+> Es importante comprender que **cuando modifica su último commit**, no lo está arreglando sino **reemplazándolo por
+> completo con un commit nuevo** y mejorado que elimina el commit anterior y coloca el nuevo commit en su lugar.
+> Efectivamente, es como si el commit anterior nunca hubiera ocurrido y no aparecerá en el historial de su repositorio.
+
+**IMPORTANTE**
+> **Modifique únicamente los commits que aún sean locales y no hayan sido enviadas a ninguna parte. Modificar los
+> commits enviados previamente y forzar el envío de la rama causará problemas a sus colaboradores.**
+
