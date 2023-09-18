@@ -981,3 +981,28 @@ diff --git a/FILE.md b/FILE.md
 new file mode 100644
 index 0000000..e69de29
 ````
+
+### Etiquetar más tarde
+
+También puedes etiquetar commits después de haber avanzado más allá de ellas. Supongamos que tu historial de
+confirmaciones luce de la siguiente manera:
+
+````bash
+$ git log --oneline
+b736e0a (HEAD -> main, origin/main, test) Nuevo archivo FILE.md
+843428e Agregando archvo PROJECTS.md
+104cb82 Inicio
+````
+
+Ahora supongamos que por alguna razón se nos **"olvidó etiquetar el inicio"** del commit en la versión **v1.0**.
+No hay ningún problema, podemos agregarle su etiqueta como creamos una etiqueta de siempre pero agregándole al 
+final el **código hash del commit** a ser etiquetado:
+
+````bash
+$ git tag -a v1.0 -m "Inicio del programa" 104cb82
+
+$ git log --oneline
+b736e0a (HEAD -> main, origin/main, test) Nuevo archivo FILE.md
+843428e Agregando archvo PROJECTS.md
+104cb82 (tag: v1.0) Inicio
+````
