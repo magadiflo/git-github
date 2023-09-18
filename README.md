@@ -914,7 +914,7 @@ v2.1.0
 
 Git admite dos tipos de etiquetas: **ligeras y anotadas**.
 
-- **Una etiqueta ligeras** es muy parecida a una rama que no cambia: es solo un puntero a un commit específico.
+- **Una etiqueta ligeras** es muy parecida a una rama que no cambia: **es solo un puntero a un commit específico.**
 - **Las etiquetas anotadas** se almacenan como objetos completos en la base de datos de Git. Están sumados de
   verificación; contienen el nombre del etiquetador, el correo electrónico y la fecha; tener un mensaje de etiquetado; y
   se puede firmar y verificar con GNU Privacy Guard (GPG). **Generalmente, se recomienda crear etiquetas anotadas para
@@ -953,3 +953,31 @@ new file mode 100644
 index 0000000..e69de29
 ````
 
+### Etiquetas ligeras
+
+Otra forma de etiquetar commits es con una etiqueta ligera. **Básicamente, esto consiste en utilizar el identificador
+único del commit y no almacenar ninguna otra información en un archivo aparte.**. Para crear una etiqueta
+liviana, no proporcione ninguna de las opciones -a, -s o -m, **solo proporcione un nombre de etiqueta:**
+
+````bash
+$ git tag v1.0-ligera
+
+$ git tag
+v1.0-ligera
+````
+
+Esta vez, si ejecuta `git show <etiqueta_ligera>`, no verá la información adicional de la etiqueta. El comando
+simplemente muestra la confirmación:
+
+````bash
+$ git show v1.0-ligera
+commit b736e0ae3ed627d1772c5fc9bbeedf92e41f9efa (HEAD -> main, tag: v1.0-ligera, origin/main, test)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 19:49:33 2023 -0500
+
+    Nuevo archivo FILE.md
+
+diff --git a/FILE.md b/FILE.md
+new file mode 100644
+index 0000000..e69de29
+````
