@@ -755,3 +755,45 @@ ya está nuestro nuevo mensaje y además también está el archivo HISTORY.md co
 > **Modifique únicamente los commits que aún sean locales y no hayan sido enviadas a ninguna parte. Modificar los
 > commits enviados previamente y forzar el envío de la rama causará problemas a sus colaboradores.**
 
+### Deshacer un archivo preparado
+
+Las siguientes dos secciones demuestran cómo trabajar con su **staging area** y cambios en el **working directory**.
+Lo bueno es que **el comando que utiliza para determinar el estado de esas dos áreas** también **le recuerda cómo
+deshacer los cambios** en ellas.
+
+Por ejemplo, tenemos los siguientes archivos agregados en el **staging area**:
+
+````bash
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        renamed:    FILE.md -> MY_FILE.md
+        modified:   PROJECTS.md
+        modified:   README.md
+````
+
+Justo debajo del texto **"Changes to be committed"**, dice use `"git restore --staged <file>..."` para cancelar la
+etapa. En nuestro caso, por ejemplo, queremos quitar el archivo **README.md** del **staging area**, por lo que podemos
+realizar lo siguiente:
+
+````bash
+$ git restore --staged README.md
+
+$ git status
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        renamed:    FILE.md -> MY_FILE.md
+        modified:   PROJECTS.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+````
+
+Como observamos, ahora el archivo **README.md** ha dejado el **staging area** y se ha vuelto a colocar en el **working
+directory**.
