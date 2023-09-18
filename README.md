@@ -797,3 +797,35 @@ Changes not staged for commit:
 
 Como observamos, ahora el archivo **README.md** ha dejado el **staging area** y se ha vuelto a colocar en el **working
 directory**.
+
+### Deshacer un archivo modificado
+
+Supongamos que tenemos un archivo modificado en el **working directory**:
+
+````bash
+$ git status
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   PROJECTS.md
+````
+
+**Queremos descartar el cambio realizado en ese archivo**. Si vemos el resultado anterior, **git nos está indicando de
+manera muy explícita cómo descartar los cambios que hemos realizado.**
+
+````bash
+$ git restore PROJECTS.md
+
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+````
+
+Podemos observar que los cambios se han revertido.
+
+**NOTA**
+> En versiones anteriores de Git se usaba el comando `git checkout -- <file>...`, aunque aún se puede seguir utilizando.
+> En mi caso optaré por utilizar, según el mensaje mostrado en el status: `git restore <file>...`
+
