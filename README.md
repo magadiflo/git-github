@@ -875,3 +875,38 @@ Ahora puedes usar la cadena `pb` en la línea de comando en lugar de la URL comp
 > Recordar que cuando creamos un repositorio local y luego queremos vincularlo a un repositorio remoto recién creado
 > utilizamos el comando: `git remote add origin <url>`
 
+## Etiquetado (Tag)
+
+Normalmente, la gente usa esta funcionalidad para marcar puntos de versión (v1.0, v2.0, etc.). En esta sección,
+aprenderá cómo enumerar las etiquetas existentes, cómo crear y eliminar etiquetas y cuáles son los diferentes tipos
+de etiquetas.
+
+### Listar sus tags
+
+Para listar los tags podemos usar el comando `git tag` y agregarle de manera opcional `-l` o `--list`:
+
+````bash
+$ git tag
+1.0.0
+````
+
+Podemos buscar tags que coincidan con un patrón en particular. Primero mostramos todos los tags y luego hacemos el
+filtrado para ver la diferencia:
+
+````bash
+$  git tag
+v1.0.0
+v2.0.0
+v2.1.0
+v3.0.0
+v4.0.0
+
+$ git tag -l "v2*"
+v2.0.0
+v2.1.0
+````
+
+**NOTA**
+> Si vamos a filtrar los tags, **aquí sí es obligatorio colocar previamente el -l o --list**, porque si no lo hacemos va
+> a crear el tag que estemos colocando, cuando en realidad lo que queremos es buscar.
+
