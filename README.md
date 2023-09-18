@@ -829,3 +829,24 @@ Podemos observar que los cambios se han revertido.
 > En versiones anteriores de Git se usaba el comando `git checkout -- <file>...`, aunque aún se puede seguir utilizando.
 > En mi caso optaré por utilizar, según el mensaje mostrado en el status: `git restore <file>...`
 
+## Trabajar con repositorios remotos
+
+### Viendo tus repositorios remotos
+
+Para ver qué servidores remotos ha configurado, puede ejecutar el comando `git remote`. Enumera los nombres cortos de
+cada identificador remoto que haya especificado. Si has clonado tu repositorio, al menos deberías ver `origin`, que es
+el **nombre predeterminado que Git le da al servidor desde el que clonaste.**
+
+````bash
+$ git remote
+origin
+````
+
+También podemos especificar `-v`, que muestra las URL que Git ha almacenado para el nombre corto que se usará al leer y
+escribir en ese repositorio remoto:
+
+````bash
+$ git remote -v
+origin  https://github.com/magadiflo/git-github-practice.git (fetch)
+origin  https://github.com/magadiflo/git-github-practice.git (push)
+````
