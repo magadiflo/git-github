@@ -910,3 +910,46 @@ v2.1.0
 > Si vamos a filtrar los tags, **aquí sí es obligatorio colocar previamente el -l o --list**, porque si no lo hacemos va
 > a crear el tag que estemos colocando, cuando en realidad lo que queremos es buscar.
 
+### Creando tags
+
+Git admite dos tipos de etiquetas: **ligeras y anotadas**.
+
+- **Una etiqueta ligeras** es muy parecida a una rama que no cambia: es solo un puntero a un commit específico.
+- **Las etiquetas anotadas** se almacenan como objetos completos en la base de datos de Git. Están sumados de
+  verificación; contienen el nombre del etiquetador, el correo electrónico y la fecha; tener un mensaje de etiquetado; y
+  se puede firmar y verificar con GNU Privacy Guard (GPG). **Generalmente, se recomienda crear etiquetas anotadas para
+  poder tener toda esta información;** pero si desea una etiqueta temporal o por alguna razón no desea conservar el
+  resto de la información, también hay disponibles etiquetas ligeras.
+
+### Etiquetas anotadas
+
+La forma más sencilla es especificar `-a` cuando ejecuta el comando de etiqueta:
+
+````bash
+$ git tag -a v1.0 -m "Mi versión 1.0"
+
+$ git tag
+v1.0
+````
+
+Puede **ver los datos de la etiqueta** junto con el que se etiquetó mediante el comando `git show`:
+
+````bash
+$ git show v1.0
+tag v1.0
+Tagger: Martín <magadiflo@gmail.com>
+Date:   Mon Sep 18 17:19:44 2023 -0500
+
+Mi versión 1.0
+
+commit b736e0ae3ed627d1772c5fc9bbeedf92e41f9efa (HEAD -> main, tag: v1.0, origin/main, test)
+Author: Martín <magadiflo@gmail.com>
+Date:   Fri Sep 15 19:49:33 2023 -0500
+
+    Nuevo archivo FILE.md
+
+diff --git a/FILE.md b/FILE.md
+new file mode 100644
+index 0000000..e69de29
+````
+
