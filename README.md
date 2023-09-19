@@ -1130,3 +1130,159 @@ commit en la que se encuentra actualmente:
 ````bash
 $ git branch testing
 ````
+
+### Cambiar de rama
+
+Para cambiar a una rama existente, ejecuta el comando `git checkout <rama_destino>`. Esto mueve `HEAD` para apuntar a la
+rama de testing.
+
+````bash
+$ git branch
+* main
+  testing
+  
+$ git checkout testing
+Switched to branch 'testing'
+
+$ git branch
+  main
+* testing
+
+$ git lg
+* b736e0a (HEAD -> testing, origin/main, main) Nuevo archivo FILE.md
+* 843428e (tag: v2.0) Agregando archvo PROJECTS.md
+* 104cb82 (tag: v1.0) Inicio
+````
+
+Podemos usar el siguiente comando git para imprimir el **historial de commits**, mostrándonos **dónde están los
+punteros de rama** y cómo ha **divergido nuestro historial**:
+
+````bash
+$ git log --oneline --decorate --graph --all
+* 5abaea2 (HEAD -> feature/git-branching) Creando nueva rama
+| *   99110b6 (tag: v2.0.0, origin/main, main) Merge pull request #4 from magadiflo/release-2.0.0
+| |\
+| |/
+|/|
+* |   fd25905 (origin/release-2.0.0, origin/develop, release-2.0.0, develop) Merge pull request #3 from magadiflo/feature/git-basics
+|\ \
+| * | 667d65c (origin/feature/git-basics, feature/git-basics) Alias de Git
+| * | 20b1166 Eliminar etiqueta
+| * | 18b9ff3 Compartir etiquetas
+| * | c3008c5 Etiquetar más tarde
+| * | e3e164b Etiquetas ligeras
+| * | e3525cd Etiquetas anotadas
+| * | bc18882 Listar tags
+| * | 5fe2226 Agregar repositorio remoto
+| * | f5fe5ba Viendo tus repositorios remotos
+| * | fd7d062 Deshacer un archivo modificado
+| * | 67547d2 Deshacer un archivo preparado
+| * | b3724d5 Deshacer cosas. Uso del --amend
+| * | 4514cd9 Visualización del historial de commits
+| * | bc616b3 Registrando cambios en el repositorio
+| * | 46b9424 Conceptos básicos: obtener un repositorio Git
+|/ /
+| *   71806c1 (tag: 1.0.0) Merge pull request #2 from magadiflo/release-1.0.0
+| |\
+| |/
+|/|
+* |   681b273 (origin/release-1.0.0, release-1.0.0) Merge pull request #1 from magadiflo/feature/getting-started
+|\ \
+| |/
+|/|
+| * 60e5b0e (origin/feature/getting-started, feature/getting-started) Primeros pasos: obtener ayuda
+| * 5675752 Primeros pasos: configuración de git por primera vez
+|/
+* 17237cc Inicio
+````
+
+**NOTA**
+> El comando anterior, al ser demasiado grande ya lo tenía configurado con el alias `lg` en la configuración global
+> de git.
+>
+> `--oneline`, para ver en una línea los commits.<br>
+> `--decorate`, para ver hacia dónde apuntan los punteros de las ramas. Permite ver los nombres de las ramas y etiquetas
+> que están asociadas a los commits, aunque **en versiones actuales de git las ramas y etiquetas se muestran de manera
+> predeterminada, simplemente al hacer git log sin necesidad de --decorate**.<br>
+> `--graph`, para mostrar las líneas como una especie de gráfico en la consola.<br>
+> `--all`, muestra todas las ramas y sus commits.
+
+Veamos el uso del `--all` con el siguiente ejemplo donde tengo el historial de commits mostrados:
+
+````bash
+$ git log --oneline
+b736e0a (HEAD -> main, origin/main) Nuevo archivo FILE.md
+843428e (tag: v2.0) Agregando archvo PROJECTS.md
+104cb82 (tag: v1.0) Inicio
+````
+
+Nos moveremos al commit inicial `104cb82` y luego **ejecutaremos el log sin el --all**:
+
+````bash
+$ git checkout 104cb82
+
+$  git log --oneline
+104cb82 (HEAD, tag: v1.0) Inicio
+````
+
+Como observamos, solo nos muestra el historial hacia abajo a partir del commit en el que actualmente estamos. Aunque
+como estamos en el primer commit, por debajo de él no hay más commits, entonces solo nos muestra ese primer commit.
+
+Ahora, qué pasa si usamos el `--all`:
+
+````bash
+$ git log --oneline --all
+b27daca (testing) Cambio en la rama testing
+b736e0a (origin/main, main) Nuevo archivo FILE.md
+843428e (tag: v2.0) Agregando archvo PROJECTS.md
+104cb82 (HEAD, tag: v1.0) Inicio
+````
+
+Ahora vemos que no solo nos muestra que el `HEAD` está apuntando al commit donde nos movimos anteriormente, sino que
+también nos muestra todos los demás commits.
+
+### Crear una rama y cambiar al mismo tiempo
+
+Es típico crear una nueva rama y querer cambiar a esa nueva rama al mismo tiempo. Esto se puede hacer en una sola
+operación con `git checkout -b <newbranchname>`.
+
+````bash
+$ git branch
+* main
+
+$ git checkout -b testing
+Switched to a new branch 'testing'
+
+$ git branch
+  main
+* testing
+````
+
+A partir de la versión 2.23 de Git puedes usar `git switch` en lugar de `git checkout` para:
+
+- Crear una nueva rama y cambiar a ella `git switch -c new-branch` (`-c` o `--create`):
+  ````bash
+  git branch
+  * main
+
+  $ git switch -c testing
+  Switched to a new branch 'testing'
+  
+  $ git branch
+  main
+  * testing
+  ````
+- Cambiar a una rama existente `git switch destination_branch`:
+  ````bash
+  $ git branch
+  main
+  * testing
+
+  $ git switch main
+  Switched to branch 'main'
+  Your branch is up to date with 'origin/main'.
+  
+  $ git branch
+  * main
+    testing
+  ````
