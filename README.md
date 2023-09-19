@@ -1286,3 +1286,47 @@ A partir de la versión 2.23 de Git puedes usar `git switch` en lugar de `git ch
   * main
     testing
   ````
+
+### Eliminar una rama en local
+
+Para **eliminar una rama en nuestro repositorio local** debemos estar posicionados en una rama distinta a la que vamos a
+eliminar. Por ejemplo, si tengo dos ramas `main` y `testing`, y quiero eliminar la rama `testing`, entonces debemos
+posicionarnos en la rama `main` desde donde ejecutaremos el siguiente comando `git branch -d testing`:
+
+````bash
+$ git branch
+* main
+  testing
+
+M:\PROGRAMACION\DESARROLLO_GIT\documentacion_oficial\git-github-practice (main -> origin)
+$ git branch -d testing
+Deleted branch testing (was b736e0a).
+
+$ git branch
+* main
+````
+
+Si queremos eliminar una rama que tiene cambios commiteados que aún no han sido mergeados con ninguna otra rama, nos
+saldrá el mensaje `error: La rama 'testing' no está completamente fusionada. Si está seguro de que desea eliminarla,
+ejecute 'git branch -D testing'.` Es decir, si a nosotros ya no nos interesa la rama a eliminar ni mucho menos los
+cambios que en él hemos realizado y aún no están mergeados, entonces usamos el `-D`:
+
+````bash
+$ git lg
+* 2a63312 (testing) Cambio en rama testing
+* b736e0a (HEAD -> main, origin/main) Nuevo archivo FILE.md
+* 843428e (tag: v2.0) Agregando archvo PROJECTS.md
+* 104cb82 (tag: v1.0) Inicio
+
+$ git branch -d testing
+error: The branch 'testing' is not fully merged.
+If you are sure you want to delete it, run 'git branch -D testing'.
+
+$ git branch -D testing
+Deleted branch testing (was 2a63312).
+
+$ git branch
+* main
+````
+
+
