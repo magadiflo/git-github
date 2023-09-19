@@ -1540,3 +1540,205 @@ de las dos (6be8a4d).**
 > Fuente:
 > [merge-ort: a new merge strategy](https://github.blog/2021-08-16-highlights-from-git-2-33/#merge-ort-a-new-merge-strategy)
 
+**Ahora que tu trabajo está fusionado, ya no necesitas la rama iss53**. Puedes cerrar la incidencia en tu sistema de
+seguimiento de incidencias y eliminar la rama:
+
+````bash
+$ git branch -d iss53
+````
+
+### Conflictos básicos de fusión (Basic Merge Conflicts)
+
+**Si has cambiado la misma parte del mismo archivo de forma diferente en las dos ramas que estás fusionando, Git no
+será capaz de fusionarlas limpiamente.**
+
+Es decir, por ejemplo, en nuestro caso en nuestra rama **main** tenemos el commit **C4 - Modificando @Bean** donde
+modificamos parte del código de un archivo y luego en nuestra rama **iss53** creamos un commit **C5 - Modificando @Bean
+de la clase principal** donde también modificamos parte de un archivo y casualmente es la misma parte que ya se ha
+modificado en la rama **main**, por lo que si intentamos fusionar la rama **main** e **iss53** nos mostrará un mensaje
+de **conflicto de fusión**:
+
+````bash
+$ git lg
+* 48583f4 (iss53) C5 - Modificando @Bean de la clase principal
+* baeddc2 C3 - Agregando configuración
+| * bd42af6 (HEAD -> main) C4 - Modificando @Bean
+|/
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c (origin/main) C1 - Primer commit
+* 104cb82 Inicio
+
+$ git merge iss53
+Auto-merging src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+CONFLICT (content): Merge conflict in src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+Automatic merge failed; fix conflicts and then commit the result.
+````
+
+**Git no ha creado automáticamente una nueva confirmación de fusión** (`merge commit`). **Ha pausado el proceso mientras
+resuelves el conflicto.** Si quieres ver qué archivos están sin fusionar en cualquier punto después de un conflicto de
+fusión, puedes ejecutar git status:
+
+````bash
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Changes to be committed:
+        modified:   src/main/resources/application.properties
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+        both modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+````
+
+Todo lo que tenga conflictos de fusión y no haya sido resuelto aparece como no fusionado (`Unmerged paths`). **Git añade
+marcadores estándar de resolución de conflictos a los archivos que tienen conflictos**, para que puedas abrirlos
+manualmente y resolverlos. Tu archivo contiene una sección parecida a esta:
+
+````
+@SpringBootApplication
+public class GitGithubPracticeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GitGithubPracticeApplication.class, args);
+    }
+
+    @Bean
+<<<<<<<HEAD
+
+    public CommandLineRunner init() {
+        return (args) -> {
+            System.out.println("Starting application");
+=======
+            public CommandLineRunner commandLineRunner () {
+                return args -> {
+                    String message = "¡La aplicación se ha iniciado!";
+                    System.out.println("message = " + message);
+>>>>>>>iss53
+                };
+            }
+
+        }
+````
+
+Esto significa que la versión en `HEAD` (tu rama **main**, porque fue en la que nos habíamos posicionado para
+ejecutar el comando `merge`) es la parte superior de ese bloque **(todo lo que está por encima de =======)**, mientras
+que **la versión en tu rama iss53 es todo lo que está en la parte inferior**.
+
+Para resolver el conflicto, tienes que elegir un lado u otro o fusionar los contenidos tú mismo. Por ejemplo, podrías
+resolver este conflicto sustituyendo todo el bloque por esto:
+
+````java
+
+@SpringBootApplication
+public class GitGithubPracticeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GitGithubPracticeApplication.class, args);
+    }
+
+    @Bean
+    public CommandLineRunner init() {
+        return args -> {
+            System.out.println("¡La aplicación se ha iniciado");
+        };
+    }
+}
+````
+
+Esta resolución tiene un poco de cada sección, y las líneas <<<<<<<, =======, y >>>>>>> han sido completamente
+eliminadas.
+
+#### Marcar el archivo como resuelto en Git
+
+Después de haber resuelto cada una de estas secciones en cada archivo en conflicto, ejecuta `git add <archivo>...`
+en cada archivo **para marcarlo como resuelto**:
+
+````bash
+$ git add .
+````
+
+Ahora podemos ejecutar `git status` de nuevo para **verificar** que todos los **conflictos se han resuelto**:
+
+````bash
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+All conflicts fixed but you are still merging.
+  (use "git commit" to conclude merge)
+
+Changes to be committed:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+        modified:   src/main/resources/application.properties
+````
+
+#### Concluyendo la fusión (merge commit)
+
+Si estás contento con eso, y verificas que todos los archivos que tenían conflictos han sido puestos en el
+`staging area`, puedes teclear `git commit` **para finalizar el merge commit**. El mensaje de confirmación
+por defecto se parece a esto:
+
+````bash
+$ git commit
+hint: Waiting for your editor to close the file...
+````
+
+Se nos abre nuestro editor Visual Studio Code con el mensaje del commit:
+
+````
+Merge branch 'iss53'
+
+# Conflicts:
+#	src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please run
+#	git update-ref -d MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is ahead of 'origin/main' by 2 commits.
+#   (use "git push" to publish your local commits)
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+#	modified:   src/main/resources/application.properties
+#
+````
+
+Si crees que puede ser útil para otros que revisen esta fusión en el futuro, puedes modificar este mensaje de
+confirmación con detalles sobre cómo resolviste la fusión y explicar por qué hiciste los cambios que hiciste si no son
+obvios.
+
+**En mi caso**, no haré ninguna modificación al mensaje del commit de fusión, **lo dejaré por defecto**, así que solo
+cerraré el archivo abierto en VSC y vemos lo que se muestra en nuestra línea de comando:
+
+````bash
+$ git commit
+[main 671cffd] Merge branch 'iss53'
+
+$ git lg
+*   671cffd (HEAD -> main) Merge branch 'iss53'
+|\
+| * 48583f4 (iss53) C5 - Modificando @Bean de la clase principal
+| * baeddc2 C3 - Agregando configuración
+* | bd42af6 C4 - Modificando @Bean
+|/
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c (origin/main) C1 - Primer commit
+* 104cb82 Inicio
+````
+
