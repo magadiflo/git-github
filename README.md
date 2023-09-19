@@ -875,6 +875,30 @@ Ahora puedes usar la cadena `pb` en la línea de comando en lugar de la URL comp
 > Recordar que cuando creamos un repositorio local y luego queremos vincularlo a un repositorio remoto recién creado
 > utilizamos el comando: `git remote add origin <url>`
 
+### Eliminar referencia al repositorio remoto
+
+Si en nuestro repositorio local tenemos una referencia al repositorio remoto y queremos eliminar esa referencia, podemos
+usar el comando: `git remote rm <remote>`:
+
+````bash
+$ git remote -v
+origin  https://github.com/magadiflo/git-github-practice.git (fetch)
+origin  https://github.com/magadiflo/git-github-practice.git (push)
+test    https://github.com/magadiflo/prueba.git (fetch)
+test    https://github.com/magadiflo/prueba.git (push)
+
+$ git remote rm test
+
+$ git remote -v
+origin  https://github.com/magadiflo/git-github-practice.git (fetch)
+origin  https://github.com/magadiflo/git-github-practice.git (push)
+````
+
+**NOTA**
+
+> `git remote rm` **no elimina el repositorio remoto del servidor.** Simplemente, elimina del repositorio local la
+> referencia asociada al repositorio remoto.
+
 ## Etiquetado (Tag)
 
 Normalmente, la gente usa esta funcionalidad para marcar puntos de versión (v1.0, v2.0, etc.). En esta sección,
