@@ -1116,3 +1116,17 @@ $ git lg6
 ````
 
 Como puede ver, **Git simplemente reemplaza el nuevo comando con el alias** que le haya asignado.
+
+## Git Branching: Las ramas en pocas palabras
+
+La ramificación significa que te desvías de la línea principal de desarrollo y continúas trabajando sin alterar la línea
+principal.
+
+### Creando una nueva rama
+
+Para **crear una nueva rama** usamos el comando `git branch <nueva_rama>`. Esto crea un nuevo puntero al mismo
+commit en la que se encuentra actualmente:
+
+````bash
+$ git branch testing
+````
