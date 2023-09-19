@@ -1065,3 +1065,54 @@ comunes para eliminar una etiqueta de un servidor remoto.
       To https://github.com/magadiflo/git-github-practice.git
       - [deleted]         v2.0
     ````
+
+## Alias de Git
+
+Si no desea escribir el texto completo de cada uno de los comandos de Git, puede configurar fácilmente un alias para
+cada comando usando `git config`:
+
+````bash
+$ git config --global alias.lg6 "log --oneline --decorate --all --graph -6"
+
+$ git config --global --list
+core.editor="C:\Users\USUARIO\AppData\Local\Programs\Microsoft VS Code\bin\code" --wait
+user.name=Martín
+user.email=magadiflo@gmail.com
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+filter.lfs.clean=git-lfs clean -- %f
+alias.lg=log --oneline --decorate --all --graph
+alias.s=status -s -b
+alias.lg6=log --oneline --decorate --all --graph -6
+difftool.sourcetree.cmd=''
+mergetool.sourcetree.cmd=''
+mergetool.sourcetree.trustexitcode=true
+````
+
+Como observamos en el resultado anterior, hemos creado el alias `lg6` para mostrar el log de los últimos 6 commits y
+otras características más que le da las otras configuraciones colocadas. Podemos observar también que nuestro alias
+ya está registrado en las configuraciones globales junto a otros alias creados previamente como el `lg`, `s`.
+
+Esto significa que, por ejemplo, en lugar de escribir `git log --oneline --decorate --all --graph -6`, solo
+necesitamos escribir `git lg6`:
+
+````bash
+$ git log --oneline --decorate --all --graph -6
+* 20b1166 (HEAD -> feature/git-basics) Eliminar etiqueta
+* 18b9ff3 Compartir etiquetas
+* c3008c5 Etiquetar más tarde
+* e3e164b Etiquetas ligeras
+* e3525cd Etiquetas anotadas
+* bc18882 Listar tags
+
+$ git lg6
+* 20b1166 (HEAD -> feature/git-basics) Eliminar etiqueta
+* 18b9ff3 Compartir etiquetas
+* c3008c5 Etiquetar más tarde
+* e3e164b Etiquetas ligeras
+* e3525cd Etiquetas anotadas
+* bc18882 Listar tags
+````
+
+Como puede ver, **Git simplemente reemplaza el nuevo comando con el alias** que le haya asignado.
