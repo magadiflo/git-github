@@ -1409,7 +1409,7 @@ En la imagen siguiente vemos el antes y después de esa eliminación:
 
 ## Bifurcación y fusión básicas (Branching y Merging)
 
-### Basic Merging
+### Ramificación básica (Basic Branching)
 
 Tenemos el siguiente historial de commits y branches:
 
