@@ -1306,10 +1306,10 @@ $ git branch
 * main
 ````
 
-Si queremos eliminar una rama que tiene cambios commiteados que aún no han sido mergeados con ninguna otra rama, nos
+Si queremos eliminar una rama que tiene cambios commiteados que aún no han sido mergeados con la rama principal, nos
 saldrá el mensaje `error: La rama 'testing' no está completamente fusionada. Si está seguro de que desea eliminarla,
-ejecute 'git branch -D testing'.` Es decir, si a nosotros ya no nos interesa la rama a eliminar ni mucho menos los
-cambios que en él hemos realizado y aún no están mergeados, entonces usamos el `-D`:
+ejecute 'git branch -D testing'.` Es decir, si a nosotros ya no nos interesa la rama que queremos eliminar ni mucho
+menos los cambios que en él hemos realizado y aún no están mergeados, entonces usamos el `-D`:
 
 ````bash
 $ git lg
@@ -1329,4 +1329,56 @@ $ git branch
 * main
 ````
 
+### Eliminar una rama en remoto
 
+Para eso ejecutamos el comando `git push <remote> --delete <rama_remota_a_eliminar>`:
+
+````bash
+$ git branch -a
+* main
+  testing
+  remotes/origin/main
+  remotes/origin/testing
+
+$ git branch -d testing
+Deleted branch testing (was b736e0a).
+
+$ git branch -a
+* main
+  remotes/origin/main
+  remotes/origin/testing
+
+$ git push origin --delete testing
+To https://github.com/magadiflo/git-github-practice.git
+ - [deleted]         testing
+
+$ git branch -a
+* main
+  remotes/origin/main
+````
+
+En los comandos anteriores, primero se está listando todas las ramas (locales y remotos) luego eliminamos la rama
+local `testing` y luego eliminamos la rama remota `testing`.
+
+También podemos usar el **comando corto para eliminar una rama remota** `git push <remote> :<rama_remota_a_eliminar>`:
+
+````bash
+$ git branch -a
+* main
+  testing
+  remotes/origin/main
+  remotes/origin/testing
+
+$ git push origin :testing
+To https://github.com/magadiflo/git-github-practice.git
+ - [deleted]         testing
+
+$ git branch -a
+* main
+  testing
+  remotes/origin/main
+````
+
+En la imagen siguiente vemos el antes y después de esa eliminación:
+
+![03.delete-rama-remoto.png](./assets/03.delete-rama-remoto.png)
