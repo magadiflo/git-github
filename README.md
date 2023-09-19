@@ -1406,3 +1406,69 @@ $ git branch -a
 En la imagen siguiente vemos el antes y después de esa eliminación:
 
 ![03.delete-rama-remoto.png](./assets/03.delete-rama-remoto.png)
+
+## Bifurcación y fusión básicas (Branching y Merging)
+
+### Basic Merging
+
+Tenemos el siguiente historial de commits y branches:
+
+````bash
+$ git lg
+* ed0155b (HEAD -> hotfix) C4 - Documentación corregida
+| * 8026c51 (iss53) C3 - Creando nuevo ProductController
+|/
+* 6be8a4d (origin/main, main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Ahora, podemos hacer un `merge` para fusionar la rama `hotfix` con la rama `main`. Recordar que previamente debemos
+posicionarnos en la rama que absorberá a la otra rama:
+
+````bash
+$ git checkout main
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
+
+$ git merge hotfix
+Updating 6be8a4d..ed0155b
+Fast-forward
+ README.md | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+$ git lg
+* ed0155b (HEAD -> main, hotfix) C4 - Documentación corregida
+| * 8026c51 (iss53) C3 - Creando nuevo ProductController
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Notarás la frase `"Fast-forward"` en esa fusión. Como la confirmación C4 apuntada por la rama hotfix que has fusionado
+estaba directamente por delante de la confirmación C2 en la que te encuentras, **Git simplemente mueve el puntero hacia
+delante.** Para decirlo de otra forma, **cuando intentas fusionar una confirmación con otra a la que se puede llegar
+siguiendo el historial de la primera confirmación**, Git simplifica las cosas moviendo el puntero hacia delante porque
+no hay trabajo divergente que fusionar - esto se llama un **"fast-forward".**
+
+**NOTA**
+> Si observamos en el commit `6be8a4d` tengo la rama `origin/main`, esta rama hace referencia a la rama remota, es
+> decir, nuestra rama remota `origin/main` tiene los commits hasta este punto. Mientras que la **fusión (merge)** que
+> hemos realizado con la rama `hotfix` y `main` ha ocurrido en nuestro **repositorio local**, eso también incluye
+> la creación de la otra rama el `iss53`, está en local.
+
+Una vez fusionada la rama `hotfix en main` podemos eliminar la rama `hotfix` ya no la necesitamos porque ya la tenemos
+fusionada en `main`:
+
+````bash
+$ git branch -d hotfix 
+
+$ git lg
+* ed0155b (HEAD -> main) C4 - Documentación corregida
+| * 8026c51 (iss53) C3 - Creando nuevo ProductController
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
