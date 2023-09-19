@@ -995,7 +995,7 @@ b736e0a (HEAD -> main, origin/main, test) Nuevo archivo FILE.md
 ````
 
 Ahora supongamos que por alguna razón se nos **"olvidó etiquetar el inicio"** del commit en la versión **v1.0**.
-No hay ningún problema, podemos agregarle su etiqueta como creamos una etiqueta de siempre pero agregándole al 
+No hay ningún problema, podemos agregarle su etiqueta como creamos una etiqueta de siempre pero agregándole al
 final el **código hash del commit** a ser etiquetado:
 
 ````bash
@@ -1006,3 +1006,36 @@ b736e0a (HEAD -> main, origin/main, test) Nuevo archivo FILE.md
 843428e Agregando archvo PROJECTS.md
 104cb82 (tag: v1.0) Inicio
 ````
+
+### Compartir etiquetas
+
+**De forma predeterminada, el comando git push no transfiere etiquetas a servidores remotos.** Tendrá que **enviar
+etiquetas explícitamente** a un servidor compartido **después de haberlas creado.** Este proceso es como compartir
+ramas remotas: puedes ejecutar `git push origin <tagname>`.
+
+````bash
+$ git push origin v1.0
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 170 bytes | 170.00 KiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/magadiflo/git-github-practice.git
+ * [new tag]         v1.0 -> v1.0
+````
+
+Si tenemos muchos **tags** que deseamos subir a la vez, podemos usar la opción `--tags`:
+
+````bash
+$ git push origin --tags
+Enumerating objects: 2, done.
+Counting objects: 100% (2/2), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (2/2), 294 bytes | 294.00 KiB/s, done.
+Total 2 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/magadiflo/git-github-practice.git
+ * [new tag]         v1.0 -> v1.0
+ * [new tag]         v2.0 -> v2.0
+````
+
+Ahora, cuando alguien más clone o extraiga datos de su repositorio, también obtendrá todas sus etiquetas.
