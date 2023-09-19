@@ -1472,3 +1472,71 @@ $ git lg
 * 4a1d91c C1 - Primer commit
 * 104cb82 Inicio
 ````
+
+### Fusión básica (Basic Merging)
+
+Tenemos el siguiente historial de commits y branches:
+
+````bash
+$ git lg
+* a54b068 (HEAD -> iss53) C5 - Finalizando ProductController
+* 8026c51 C3 - Creando nuevo ProductController
+| * ed0155b (main) C4 - Documentación corregida
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Ahora, queremos fusionar nuestra rama `iss53` en nuestra rama `main`. Para eso, debemos posicionarnos en la rama
+`main` que será la rama que absorberá a la rama `iss53` y ejecutar el comando `git merge iss53`:
+
+````bash
+$ git checkout main
+Switched to branch 'main'
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+$ git lg
+* a54b068 (iss53) C5 - Finalizando ProductController
+* 8026c51 C3 - Creando nuevo ProductController
+| * ed0155b (HEAD -> main) C4 - Documentación corregida
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git merge iss53
+Merge made by the 'ort' strategy.
+ src/main/java/com/magadiflo/git/github/app/controllers/ProductController.java | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 src/main/java/com/magadiflo/git/github/app/controllers/ProductController.java
+
+$ git lg
+*   46abee1 (HEAD -> main) Merge branch 'iss53'
+|\
+| * a54b068 (iss53) C5 - Finalizando ProductController
+| * 8026c51 C3 - Creando nuevo ProductController
+* | ed0155b C4 - Documentación corregida
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Esto parece un poco diferente de la fusión de hotfix que hizo anteriormente. En este caso, tu historia de desarrollo ha
+divergido desde algún punto anterior. **Como el commit de la rama en la que estás no es un ancestro directo de la
+rama en la que estás fusionando, Git tiene que hacer algo de trabajo**. En este caso, **Git hace una simple fusión a
+tres bandas, usando las dos instantáneas apuntadas por las puntas de rama (ed0155b y a54b068) y el ancestro común
+de las dos (6be8a4d).**
+
+**NOTA**
+> En la documentación, luego de hacer esta misma fusión muestra el mensaje `Merge made by the 'recursive' strategy.`
+> mientras que en mi caso muestra el mensaje `Merge made by the 'ort' strategy.` Según investigué el
+> `Merge made by the "ort" strategy` o merge-ort: una nueva estrategia de fusión: La estrategia es una reescritura
+> desde cero con los mismos conceptos (recurrencia y detección de cambio de nombre)[de la estrategia mostrada en la
+> documentación] pero resolviendo muchas de las correcciones de errores y el rendimiento de larga data.
+>
+> Fuente:
+> [merge-ort: a new merge strategy](https://github.blog/2021-08-16-highlights-from-git-2-33/#merge-ort-a-new-merge-strategy)
+
