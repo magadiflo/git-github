@@ -1039,3 +1039,29 @@ To https://github.com/magadiflo/git-github-practice.git
 ````
 
 Ahora, cuando alguien más clone o extraiga datos de su repositorio, también obtendrá todas sus etiquetas.
+
+### Eliminar etiquetas
+
+Para **eliminar una etiqueta en su repositorio local**, puede usar `git tag -d <tagname>`:
+
+````bash
+$ git tag -d v1.0
+Deleted tag 'v1.0' (was 7f38a22)
+````
+
+Tenga en cuenta que **el comando anterior no elimina la etiqueta de ningún servidor remoto.** Existen dos variaciones
+comunes para eliminar una etiqueta de un servidor remoto.
+
+1. La primera variación es `git push <remote> :refs/tags/<tagname>`:
+    ````bash
+    $ git push origin :refs/tags/v2.0
+      To https://github.com/magadiflo/git-github-practice.git
+      - [deleted]         v2.0
+   ````
+
+2. La segunda forma (y más intuitiva) de eliminar una etiqueta remota es con:
+    ````bash
+      $ git push origin --delete v2.0
+      To https://github.com/magadiflo/git-github-practice.git
+      - [deleted]         v2.0
+    ````
