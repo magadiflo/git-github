@@ -1742,3 +1742,78 @@ $ git lg
 * 104cb82 Inicio
 ````
 
+## Gestión de ramas
+
+Si ejecutas `git branch` sin argumentos, obtendrás un simple listado de tus ramas actuales:
+
+````bash
+$ git branch
+  iss53
+* main
+````
+
+El carácter `*` indica la rama en la que actualmente estamos posicionados.
+
+Las útiles opciones `--merged y --no-merged` pueden filtrar esta **lista a las ramas que has fusionado** o que **aún no
+has fusionado** en la rama en la que te encuentras.
+
+````bash
+$ git branch --merged
+  iss53
+* main
+````
+
+Como ya has fusionado iss53 antes, lo ves en tu lista. Las ramas de esta lista sin el `*` delante suelen estar bien para
+borrarlas con `git branch -d`; ya has incorporado su trabajo en otra rama, así que no vas a perder nada.
+
+Para ver todas las **ramas que contienen trabajo que aún no has fusionado**, puedes ejecutar `git branch --no-merged`:
+
+````bash
+$ git branch --no-merged
+  testing
+````
+
+## Cambiar el nombre de una rama
+
+**Precaución**
+> **No renombres ramas que aún estén en uso por otros colaboradores**. No renombres una rama como master/main/mainline
+> sin haber leído la sección Cambiar el nombre de la rama master.
+
+Supongamos que tienes una rama que se llama `bad-branch-name` y quieres cambiarla a `corrected-branch-name`,
+**manteniendo todo el historial**. También quieres cambiar el nombre de la rama en el servidor remoto (GitHub, GitLab,
+otro servidor). **¿Cómo se hace esto?**
+
+Renombra la rama localmente con el comando `git branch --move`:
+
+````bash
+$ git branch --move bad-branch-name corrected-branch-name
+````
+
+Esto reemplaza tu `bad-branch-name` por `corrected-branch-name`, pero **este cambio es solo local por ahora**. Para que
+otros puedan ver la rama corregida en remoto, envíala:
+
+````bash
+$ git push -u origin corrected-branch-name
+````
+
+Ahora echaremos un breve vistazo a la situación actual:
+
+````bash
+$ git branch -a
+* corrected-branch-name
+  iss53
+  main
+  testing
+  remotes/origin/bad-branch-name
+  remotes/origin/corrected-branch-name
+  remotes/origin/main
+````
+
+Fíjate que estás en la rama `corrected-branch-name` y está disponible en la remota. Sin embargo, la rama con el
+nombre incorrecto también sigue presente allí, pero puedes eliminarla ejecutando el siguiente comando:
+
+````bash
+$ git push origin --delete bad-branch-name
+````
+
+Ahora el nombre de rama incorrecto se sustituye completamente por el nombre de rama corregido.
