@@ -875,6 +875,30 @@ Ahora puedes usar la cadena `pb` en la línea de comando en lugar de la URL comp
 > Recordar que cuando creamos un repositorio local y luego queremos vincularlo a un repositorio remoto recién creado
 > utilizamos el comando: `git remote add origin <url>`
 
+### Eliminar referencia al repositorio remoto
+
+Si en nuestro repositorio local tenemos una referencia al repositorio remoto y queremos eliminar esa referencia, podemos
+usar el comando: `git remote rm <remote>`:
+
+````bash
+$ git remote -v
+origin  https://github.com/magadiflo/git-github-practice.git (fetch)
+origin  https://github.com/magadiflo/git-github-practice.git (push)
+test    https://github.com/magadiflo/prueba.git (fetch)
+test    https://github.com/magadiflo/prueba.git (push)
+
+$ git remote rm test
+
+$ git remote -v
+origin  https://github.com/magadiflo/git-github-practice.git (fetch)
+origin  https://github.com/magadiflo/git-github-practice.git (push)
+````
+
+**NOTA**
+
+> `git remote rm` **no elimina el repositorio remoto del servidor.** Simplemente, elimina del repositorio local la
+> referencia asociada al repositorio remoto.
+
 ## Etiquetado (Tag)
 
 Normalmente, la gente usa esta funcionalidad para marcar puntos de versión (v1.0, v2.0, etc.). En esta sección,
@@ -1116,3 +1140,760 @@ $ git lg6
 ````
 
 Como puede ver, **Git simplemente reemplaza el nuevo comando con el alias** que le haya asignado.
+
+## Git Branching: Las ramas en pocas palabras
+
+La ramificación significa que te desvías de la línea principal de desarrollo y continúas trabajando sin alterar la línea
+principal.
+
+### Creando una nueva rama
+
+Para **crear una nueva rama** usamos el comando `git branch <nueva_rama>`. Esto crea un nuevo puntero al mismo
+commit en la que se encuentra actualmente:
+
+````bash
+$ git branch testing
+````
+
+### Cambiar de rama
+
+Para cambiar a una rama existente, ejecuta el comando `git checkout <rama_destino>`. Esto mueve `HEAD` para apuntar a la
+rama de testing.
+
+````bash
+$ git branch
+* main
+  testing
+  
+$ git checkout testing
+Switched to branch 'testing'
+
+$ git branch
+  main
+* testing
+
+$ git lg
+* b736e0a (HEAD -> testing, origin/main, main) Nuevo archivo FILE.md
+* 843428e (tag: v2.0) Agregando archvo PROJECTS.md
+* 104cb82 (tag: v1.0) Inicio
+````
+
+Podemos usar el siguiente comando git para imprimir el **historial de commits**, mostrándonos **dónde están los
+punteros de rama** y cómo ha **divergido nuestro historial**:
+
+````bash
+$ git log --oneline --decorate --graph --all
+* 5abaea2 (HEAD -> feature/git-branching) Creando nueva rama
+| *   99110b6 (tag: v2.0.0, origin/main, main) Merge pull request #4 from magadiflo/release-2.0.0
+| |\
+| |/
+|/|
+* |   fd25905 (origin/release-2.0.0, origin/develop, release-2.0.0, develop) Merge pull request #3 from magadiflo/feature/git-basics
+|\ \
+| * | 667d65c (origin/feature/git-basics, feature/git-basics) Alias de Git
+| * | 20b1166 Eliminar etiqueta
+| * | 18b9ff3 Compartir etiquetas
+| * | c3008c5 Etiquetar más tarde
+| * | e3e164b Etiquetas ligeras
+| * | e3525cd Etiquetas anotadas
+| * | bc18882 Listar tags
+| * | 5fe2226 Agregar repositorio remoto
+| * | f5fe5ba Viendo tus repositorios remotos
+| * | fd7d062 Deshacer un archivo modificado
+| * | 67547d2 Deshacer un archivo preparado
+| * | b3724d5 Deshacer cosas. Uso del --amend
+| * | 4514cd9 Visualización del historial de commits
+| * | bc616b3 Registrando cambios en el repositorio
+| * | 46b9424 Conceptos básicos: obtener un repositorio Git
+|/ /
+| *   71806c1 (tag: 1.0.0) Merge pull request #2 from magadiflo/release-1.0.0
+| |\
+| |/
+|/|
+* |   681b273 (origin/release-1.0.0, release-1.0.0) Merge pull request #1 from magadiflo/feature/getting-started
+|\ \
+| |/
+|/|
+| * 60e5b0e (origin/feature/getting-started, feature/getting-started) Primeros pasos: obtener ayuda
+| * 5675752 Primeros pasos: configuración de git por primera vez
+|/
+* 17237cc Inicio
+````
+
+**NOTA**
+> El comando anterior, al ser demasiado grande ya lo tenía configurado con el alias `lg` en la configuración global
+> de git.
+>
+> `--oneline`, para ver en una línea los commits.<br>
+> `--decorate`, para ver hacia dónde apuntan los punteros de las ramas. Permite ver los nombres de las ramas y etiquetas
+> que están asociadas a los commits, aunque **en versiones actuales de git las ramas y etiquetas se muestran de manera
+> predeterminada, simplemente al hacer git log sin necesidad de --decorate**.<br>
+> `--graph`, para mostrar las líneas como una especie de gráfico en la consola.<br>
+> `--all`, muestra todas las ramas y sus commits.
+
+Veamos el uso del `--all` con el siguiente ejemplo donde tengo el historial de commits mostrados:
+
+````bash
+$ git log --oneline
+b736e0a (HEAD -> main, origin/main) Nuevo archivo FILE.md
+843428e (tag: v2.0) Agregando archvo PROJECTS.md
+104cb82 (tag: v1.0) Inicio
+````
+
+Nos moveremos al commit inicial `104cb82` y luego **ejecutaremos el log sin el --all**:
+
+````bash
+$ git checkout 104cb82
+
+$  git log --oneline
+104cb82 (HEAD, tag: v1.0) Inicio
+````
+
+Como observamos, solo nos muestra el historial hacia abajo a partir del commit en el que actualmente estamos. Aunque
+como estamos en el primer commit, por debajo de él no hay más commits, entonces solo nos muestra ese primer commit.
+
+Ahora, qué pasa si usamos el `--all`:
+
+````bash
+$ git log --oneline --all
+b27daca (testing) Cambio en la rama testing
+b736e0a (origin/main, main) Nuevo archivo FILE.md
+843428e (tag: v2.0) Agregando archvo PROJECTS.md
+104cb82 (HEAD, tag: v1.0) Inicio
+````
+
+Ahora vemos que no solo nos muestra que el `HEAD` está apuntando al commit donde nos movimos anteriormente, sino que
+también nos muestra todos los demás commits.
+
+### Crear una rama y cambiar al mismo tiempo
+
+Es típico crear una nueva rama y querer cambiar a esa nueva rama al mismo tiempo. Esto se puede hacer en una sola
+operación con `git checkout -b <newbranchname>`.
+
+````bash
+$ git branch
+* main
+
+$ git checkout -b testing
+Switched to a new branch 'testing'
+
+$ git branch
+  main
+* testing
+````
+
+A partir de la versión 2.23 de Git puedes usar `git switch` en lugar de `git checkout` para:
+
+- Crear una nueva rama y cambiar a ella `git switch -c new-branch` (`-c` o `--create`):
+  ````bash
+  git branch
+  * main
+
+  $ git switch -c testing
+  Switched to a new branch 'testing'
+  
+  $ git branch
+  main
+  * testing
+  ````
+- Cambiar a una rama existente `git switch destination_branch`:
+  ````bash
+  $ git branch
+  main
+  * testing
+
+  $ git switch main
+  Switched to branch 'main'
+  Your branch is up to date with 'origin/main'.
+  
+  $ git branch
+  * main
+    testing
+  ````
+
+### Eliminar una rama en local
+
+Para **eliminar una rama en nuestro repositorio local** debemos estar posicionados en una rama distinta a la que vamos a
+eliminar. Por ejemplo, si tengo dos ramas `main` y `testing`, y quiero eliminar la rama `testing`, entonces debemos
+posicionarnos en la rama `main` desde donde ejecutaremos el siguiente comando `git branch -d testing`:
+
+````bash
+$ git branch
+* main
+  testing
+
+M:\PROGRAMACION\DESARROLLO_GIT\documentacion_oficial\git-github-practice (main -> origin)
+$ git branch -d testing
+Deleted branch testing (was b736e0a).
+
+$ git branch
+* main
+````
+
+Si queremos eliminar una rama que tiene cambios commiteados que aún no han sido mergeados con la rama principal, nos
+saldrá el mensaje `error: La rama 'testing' no está completamente fusionada. Si está seguro de que desea eliminarla,
+ejecute 'git branch -D testing'.` Es decir, si a nosotros ya no nos interesa la rama que queremos eliminar ni mucho
+menos los cambios que en él hemos realizado y aún no están mergeados, entonces usamos el `-D`:
+
+````bash
+$ git lg
+* 2a63312 (testing) Cambio en rama testing
+* b736e0a (HEAD -> main, origin/main) Nuevo archivo FILE.md
+* 843428e (tag: v2.0) Agregando archvo PROJECTS.md
+* 104cb82 (tag: v1.0) Inicio
+
+$ git branch -d testing
+error: The branch 'testing' is not fully merged.
+If you are sure you want to delete it, run 'git branch -D testing'.
+
+$ git branch -D testing
+Deleted branch testing (was 2a63312).
+
+$ git branch
+* main
+````
+
+### Eliminar una rama en remoto
+
+Para eso ejecutamos el comando `git push <remote> --delete <rama_remota_a_eliminar>`:
+
+````bash
+$ git branch -a
+* main
+  testing
+  remotes/origin/main
+  remotes/origin/testing
+
+$ git branch -d testing
+Deleted branch testing (was b736e0a).
+
+$ git branch -a
+* main
+  remotes/origin/main
+  remotes/origin/testing
+
+$ git push origin --delete testing
+To https://github.com/magadiflo/git-github-practice.git
+ - [deleted]         testing
+
+$ git branch -a
+* main
+  remotes/origin/main
+````
+
+En los comandos anteriores, primero se está listando todas las ramas (locales y remotos) luego eliminamos la rama
+local `testing` y luego eliminamos la rama remota `testing`.
+
+También podemos usar el **comando corto para eliminar una rama remota** `git push <remote> :<rama_remota_a_eliminar>`:
+
+````bash
+$ git branch -a
+* main
+  testing
+  remotes/origin/main
+  remotes/origin/testing
+
+$ git push origin :testing
+To https://github.com/magadiflo/git-github-practice.git
+ - [deleted]         testing
+
+$ git branch -a
+* main
+  testing
+  remotes/origin/main
+````
+
+En la imagen siguiente vemos el antes y después de esa eliminación:
+
+![03.delete-rama-remoto.png](./assets/03.delete-rama-remoto.png)
+
+## Bifurcación y fusión básicas (Branching y Merging)
+
+### Ramificación básica (Basic Branching)
+
+Tenemos el siguiente historial de commits y branches:
+
+````bash
+$ git lg
+* ed0155b (HEAD -> hotfix) C4 - Documentación corregida
+| * 8026c51 (iss53) C3 - Creando nuevo ProductController
+|/
+* 6be8a4d (origin/main, main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Ahora, podemos hacer un `merge` para fusionar la rama `hotfix` con la rama `main`. Recordar que previamente debemos
+posicionarnos en la rama que absorberá a la otra rama:
+
+````bash
+$ git checkout main
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
+
+$ git merge hotfix
+Updating 6be8a4d..ed0155b
+Fast-forward
+ README.md | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+$ git lg
+* ed0155b (HEAD -> main, hotfix) C4 - Documentación corregida
+| * 8026c51 (iss53) C3 - Creando nuevo ProductController
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Notarás la frase `"Fast-forward"` en esa fusión. Como la confirmación C4 apuntada por la rama hotfix que has fusionado
+estaba directamente por delante de la confirmación C2 en la que te encuentras, **Git simplemente mueve el puntero hacia
+delante.** Para decirlo de otra forma, **cuando intentas fusionar una confirmación con otra a la que se puede llegar
+siguiendo el historial de la primera confirmación**, Git simplifica las cosas moviendo el puntero hacia delante porque
+no hay trabajo divergente que fusionar - esto se llama un **"fast-forward".**
+
+**NOTA**
+> Si observamos en el commit `6be8a4d` tengo la rama `origin/main`, esta rama hace referencia a la rama remota, es
+> decir, nuestra rama remota `origin/main` tiene los commits hasta este punto. Mientras que la **fusión (merge)** que
+> hemos realizado con la rama `hotfix` y `main` ha ocurrido en nuestro **repositorio local**, eso también incluye
+> la creación de la otra rama el `iss53`, está en local.
+
+Una vez fusionada la rama `hotfix en main` podemos eliminar la rama `hotfix` ya no la necesitamos porque ya la tenemos
+fusionada en `main`:
+
+````bash
+$ git branch -d hotfix 
+
+$ git lg
+* ed0155b (HEAD -> main) C4 - Documentación corregida
+| * 8026c51 (iss53) C3 - Creando nuevo ProductController
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+### Fusión básica (Basic Merging)
+
+Tenemos el siguiente historial de commits y branches:
+
+````bash
+$ git lg
+* a54b068 (HEAD -> iss53) C5 - Finalizando ProductController
+* 8026c51 C3 - Creando nuevo ProductController
+| * ed0155b (main) C4 - Documentación corregida
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Ahora, queremos fusionar nuestra rama `iss53` en nuestra rama `main`. Para eso, debemos posicionarnos en la rama
+`main` que será la rama que absorberá a la rama `iss53` y ejecutar el comando `git merge iss53`:
+
+````bash
+$ git checkout main
+Switched to branch 'main'
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+$ git lg
+* a54b068 (iss53) C5 - Finalizando ProductController
+* 8026c51 C3 - Creando nuevo ProductController
+| * ed0155b (HEAD -> main) C4 - Documentación corregida
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git merge iss53
+Merge made by the 'ort' strategy.
+ src/main/java/com/magadiflo/git/github/app/controllers/ProductController.java | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 src/main/java/com/magadiflo/git/github/app/controllers/ProductController.java
+
+$ git lg
+*   46abee1 (HEAD -> main) Merge branch 'iss53'
+|\
+| * a54b068 (iss53) C5 - Finalizando ProductController
+| * 8026c51 C3 - Creando nuevo ProductController
+* | ed0155b C4 - Documentación corregida
+|/
+* 6be8a4d (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Esto parece un poco diferente de la fusión de hotfix que hizo anteriormente. En este caso, tu historia de desarrollo ha
+divergido desde algún punto anterior. **Como el commit de la rama en la que estás no es un ancestro directo de la
+rama en la que estás fusionando, Git tiene que hacer algo de trabajo**. En este caso, **Git hace una simple fusión a
+tres bandas, usando las dos instantáneas apuntadas por las puntas de rama (ed0155b y a54b068) y el ancestro común
+de las dos (6be8a4d).**
+
+**NOTA**
+> En la documentación, luego de hacer esta misma fusión muestra el mensaje `Merge made by the 'recursive' strategy.`
+> mientras que en mi caso muestra el mensaje `Merge made by the 'ort' strategy.` Según investigué el
+> `Merge made by the "ort" strategy` o merge-ort: una nueva estrategia de fusión: La estrategia es una reescritura
+> desde cero con los mismos conceptos (recurrencia y detección de cambio de nombre)[de la estrategia mostrada en la
+> documentación] pero resolviendo muchas de las correcciones de errores y el rendimiento de larga data.
+>
+> Fuente:
+> [merge-ort: a new merge strategy](https://github.blog/2021-08-16-highlights-from-git-2-33/#merge-ort-a-new-merge-strategy)
+
+**Ahora que tu trabajo está fusionado, ya no necesitas la rama iss53**. Puedes cerrar la incidencia en tu sistema de
+seguimiento de incidencias y eliminar la rama:
+
+````bash
+$ git branch -d iss53
+````
+
+### Conflictos básicos de fusión (Basic Merge Conflicts)
+
+**Si has cambiado la misma parte del mismo archivo de forma diferente en las dos ramas que estás fusionando, Git no
+será capaz de fusionarlas limpiamente.**
+
+Es decir, por ejemplo, en nuestro caso en nuestra rama **main** tenemos el commit **C4 - Modificando @Bean** donde
+modificamos parte del código de un archivo y luego en nuestra rama **iss53** creamos un commit **C5 - Modificando @Bean
+de la clase principal** donde también modificamos parte de un archivo y casualmente es la misma parte que ya se ha
+modificado en la rama **main**, por lo que si intentamos fusionar la rama **main** e **iss53** nos mostrará un mensaje
+de **conflicto de fusión**:
+
+````bash
+$ git lg
+* 48583f4 (iss53) C5 - Modificando @Bean de la clase principal
+* baeddc2 C3 - Agregando configuración
+| * bd42af6 (HEAD -> main) C4 - Modificando @Bean
+|/
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c (origin/main) C1 - Primer commit
+* 104cb82 Inicio
+
+$ git merge iss53
+Auto-merging src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+CONFLICT (content): Merge conflict in src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+Automatic merge failed; fix conflicts and then commit the result.
+````
+
+**Git no ha creado automáticamente una nueva confirmación de fusión** (`merge commit`). **Ha pausado el proceso mientras
+resuelves el conflicto.** Si quieres ver qué archivos están sin fusionar en cualquier punto después de un conflicto de
+fusión, puedes ejecutar git status:
+
+````bash
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Changes to be committed:
+        modified:   src/main/resources/application.properties
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+        both modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+````
+
+Todo lo que tenga conflictos de fusión y no haya sido resuelto aparece como no fusionado (`Unmerged paths`). **Git añade
+marcadores estándar de resolución de conflictos a los archivos que tienen conflictos**, para que puedas abrirlos
+manualmente y resolverlos. Tu archivo contiene una sección parecida a esta:
+
+````
+@SpringBootApplication
+public class GitGithubPracticeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GitGithubPracticeApplication.class, args);
+    }
+
+    @Bean
+<<<<<<<HEAD
+
+    public CommandLineRunner init() {
+        return (args) -> {
+            System.out.println("Starting application");
+=======
+            public CommandLineRunner commandLineRunner () {
+                return args -> {
+                    String message = "¡La aplicación se ha iniciado!";
+                    System.out.println("message = " + message);
+>>>>>>>iss53
+                };
+            }
+
+        }
+````
+
+Esto significa que la versión en `HEAD` (tu rama **main**, porque fue en la que nos habíamos posicionado para
+ejecutar el comando `merge`) es la parte superior de ese bloque **(todo lo que está por encima de =======)**, mientras
+que **la versión en tu rama iss53 es todo lo que está en la parte inferior**.
+
+Para resolver el conflicto, tienes que elegir un lado u otro o fusionar los contenidos tú mismo. Por ejemplo, podrías
+resolver este conflicto sustituyendo todo el bloque por esto:
+
+````java
+
+@SpringBootApplication
+public class GitGithubPracticeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GitGithubPracticeApplication.class, args);
+    }
+
+    @Bean
+    public CommandLineRunner init() {
+        return args -> {
+            System.out.println("¡La aplicación se ha iniciado");
+        };
+    }
+}
+````
+
+Esta resolución tiene un poco de cada sección, y las líneas <<<<<<<, =======, y >>>>>>> han sido completamente
+eliminadas.
+
+#### Marcar el archivo como resuelto en Git
+
+Después de haber resuelto cada una de estas secciones en cada archivo en conflicto, ejecuta `git add <archivo>...`
+en cada archivo **para marcarlo como resuelto**:
+
+````bash
+$ git add .
+````
+
+Ahora podemos ejecutar `git status` de nuevo para **verificar** que todos los **conflictos se han resuelto**:
+
+````bash
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+All conflicts fixed but you are still merging.
+  (use "git commit" to conclude merge)
+
+Changes to be committed:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+        modified:   src/main/resources/application.properties
+````
+
+#### Concluyendo la fusión (merge commit)
+
+Si estás contento con eso, y verificas que todos los archivos que tenían conflictos han sido puestos en el
+`staging area`, puedes teclear `git commit` **para finalizar el merge commit**. El mensaje de confirmación
+por defecto se parece a esto:
+
+````bash
+$ git commit
+hint: Waiting for your editor to close the file...
+````
+
+Se nos abre nuestro editor Visual Studio Code con el mensaje del commit:
+
+````
+Merge branch 'iss53'
+
+# Conflicts:
+#	src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please run
+#	git update-ref -d MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is ahead of 'origin/main' by 2 commits.
+#   (use "git push" to publish your local commits)
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+#	modified:   src/main/resources/application.properties
+#
+````
+
+Si crees que puede ser útil para otros que revisen esta fusión en el futuro, puedes modificar este mensaje de
+confirmación con detalles sobre cómo resolviste la fusión y explicar por qué hiciste los cambios que hiciste si no son
+obvios.
+
+**En mi caso**, no haré ninguna modificación al mensaje del commit de fusión, **lo dejaré por defecto**, así que solo
+cerraré el archivo abierto en VSC y vemos lo que se muestra en nuestra línea de comando:
+
+````bash
+$ git commit
+[main 671cffd] Merge branch 'iss53'
+
+$ git lg
+*   671cffd (HEAD -> main) Merge branch 'iss53'
+|\
+| * 48583f4 (iss53) C5 - Modificando @Bean de la clase principal
+| * baeddc2 C3 - Agregando configuración
+* | bd42af6 C4 - Modificando @Bean
+|/
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c (origin/main) C1 - Primer commit
+* 104cb82 Inicio
+````
+
+## Gestión de ramas
+
+Si ejecutas `git branch` sin argumentos, obtendrás un simple listado de tus ramas actuales:
+
+````bash
+$ git branch
+  iss53
+* main
+````
+
+El carácter `*` indica la rama en la que actualmente estamos posicionados.
+
+Las útiles opciones `--merged y --no-merged` pueden filtrar esta **lista a las ramas que has fusionado** o que **aún no
+has fusionado** en la rama en la que te encuentras.
+
+````bash
+$ git branch --merged
+  iss53
+* main
+````
+
+Como ya has fusionado iss53 antes, lo ves en tu lista. Las ramas de esta lista sin el `*` delante suelen estar bien para
+borrarlas con `git branch -d`; ya has incorporado su trabajo en otra rama, así que no vas a perder nada.
+
+Para ver todas las **ramas que contienen trabajo que aún no has fusionado**, puedes ejecutar `git branch --no-merged`:
+
+````bash
+$ git branch --no-merged
+  testing
+````
+
+## Cambiar el nombre de una rama
+
+**Precaución**
+> **No renombres ramas que aún estén en uso por otros colaboradores**. No renombres una rama como master/main/mainline
+> sin haber leído la sección Cambiar el nombre de la rama master.
+
+Supongamos que tienes una rama que se llama `bad-branch-name` y quieres cambiarla a `corrected-branch-name`,
+**manteniendo todo el historial**. También quieres cambiar el nombre de la rama en el servidor remoto (GitHub, GitLab,
+otro servidor). **¿Cómo se hace esto?**
+
+Renombra la rama localmente con el comando `git branch --move`:
+
+````bash
+$ git branch --move bad-branch-name corrected-branch-name
+````
+
+Esto reemplaza tu `bad-branch-name` por `corrected-branch-name`, pero **este cambio es solo local por ahora**. Para que
+otros puedan ver la rama corregida en remoto, envíala:
+
+````bash
+$ git push -u origin corrected-branch-name
+````
+
+Ahora echaremos un breve vistazo a la situación actual:
+
+````bash
+$ git branch -a
+* corrected-branch-name
+  iss53
+  main
+  testing
+  remotes/origin/bad-branch-name
+  remotes/origin/corrected-branch-name
+  remotes/origin/main
+````
+
+Fíjate que estás en la rama `corrected-branch-name` y está disponible en la remota. Sin embargo, la rama con el
+nombre incorrecto también sigue presente allí, pero puedes eliminarla ejecutando el siguiente comando:
+
+````bash
+$ git push origin --delete bad-branch-name
+````
+
+Ahora el nombre de rama incorrecto se sustituye completamente por el nombre de rama corregido.
+
+## Rebasar (Rebasing)
+
+En Git, hay **dos formas principales de integrar los cambios de una rama en otra**: el `merge` y el `rebase`.
+En esta sección aprenderás qué es el rebase, cómo hacerlo, por qué es una herramienta increíble y en qué
+casos no querrás usarla.
+
+Veamos el siguiente historial, puedes ver que **divergiste tu trabajo e hiciste commits en dos ramas diferentes**:
+
+````bash
+$ git lg
+* 05cde4d (HEAD -> experiment) C4 - Cambio en experiment
+| * c33b58a (main) C3 - Commit de main
+|/
+* 6a7afa3 (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Como vimos anteriormente, la forma más sencilla de integrar las ramas es usando el comando `git merge`, pero en esta
+oportunidad veremos el uso del comando `rebase` como una manera distinta de poder integrar ambas ramas.
+
+Podemos tomar los cambios que se introdujeron en la rama `experiment (C4)` y volver a aplicarlos sobre la rama
+`main (C3)`. En git, eso se llama `rebase`.
+
+Con el **comando rebase**, puedes tomar todos los cambios que fueron confirmados en una rama y volver a aplicarlos en
+una rama diferente.
+
+Para este ejemplo, nos posicionamos en la rama `experiment` y luego rebasamos a la rama `main`:
+
+````bash
+$ git checkout experiment
+Switched to branch 'experiment'
+
+$ git rebase main
+Successfully rebased and updated refs/heads/experiment.
+
+$ git lg
+* aad2f21 (HEAD -> experiment) C4 - Cambio en experiment
+* c33b58a (main) C3 - Commit de main
+* 6a7afa3 (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+En este punto, puede volver a la rama `main` y hacer un `fast-forward`:
+
+````bash
+$ git checkout main
+
+$ git merge experiment
+Updating c33b58a..aad2f21
+Fast-forward
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+````
+
+Ahora, la instantánea apuntada por C4' es exactamente la misma que la apuntada por C5 en el ejemplo de fusión. No hay
+diferencia en el producto final de la integración, pero el `rebase` hace que la historia sea más limpia. Si
+examina el registro de una rama rebasada, **parece una historia lineal**: parece que todo el trabajo ocurrió en serie,
+incluso cuando originalmente ocurrió en paralelo.
+
+````bash
+git lg
+* aad2f21 (HEAD -> main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+### Los peligros de rebasar
+
+> - **No rebase commits que existen fuera de su repositorio** y en la que las personas pueden haber basado su trabajo.
+> - Recuerda que **solo debes ejecutar git rebase en un repositorio local.** Si el rebase se hace en el repositorio
+    remoto, entonces puede crear muchos problemas cuando otros desarrolladores intentan sacar los últimos cambios de
+    código del repositorio remoto.
+> - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
+
+
