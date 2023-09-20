@@ -1887,3 +1887,13 @@ git lg
 * 4a1d91c C1 - Primer commit
 * 104cb82 Inicio
 ````
+
+### Los peligros de rebasar
+
+> - **No rebase commits que existen fuera de su repositorio** y en la que las personas pueden haber basado su trabajo.
+> - Recuerda que **solo debes ejecutar git rebase en un repositorio local.** Si el rebase se hace en el repositorio
+    remoto, entonces puede crear muchos problemas cuando otros desarrolladores intentan sacar los últimos cambios de
+    código del repositorio remoto.
+> - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
+
+
