@@ -1896,4 +1896,23 @@ git lg
     código del repositorio remoto.
 > - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
 
+### [Merge vs Rebase](https://www.linkedin.com/posts/alexxubyte_systemdesign-coding-interviewtips-activity-7023692482131427328-Kk2_/)
+
+![git-merge-vs-git-rebase](./assets/git-merge-vs-git-rebase.png)
+
+**Resumen**
+
+> **Git Merge**<br>
+> Esto crea un nuevo commit `G'` en la rama `main`. G' une los historiales de ambas ramas `main y feature`.<br>
+> Git merge es `no-destructive`. No se modifica ni la rama **main** ni la rama **feature**.
+>
+> **Git Rebase**<br>
+> Git rebase mueve las historias de la rama `feature` a la **cabecera** de la rama `main`.<br>
+> Crea nuevos commits `E', F', y G'` para cada commit en la rama **feature**.<br>
+> La ventaja de rebase es que tiene `𝐥𝐢𝐧𝐞𝐚𝐫 𝐜𝐨𝐦𝐦𝐢𝐭 𝐡𝐢𝐬𝐭𝐨𝐫𝐲`.
+>
+> **Rebase puede ser peligroso** si no se sigue **"la regla de oro de git rebase".**
+>
+> **Regla de oro de Git Rebase**<br>
+> `No lo utilices nunca en ramas públicas`
 
