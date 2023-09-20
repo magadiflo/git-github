@@ -1817,3 +1817,73 @@ $ git push origin --delete bad-branch-name
 ````
 
 Ahora el nombre de rama incorrecto se sustituye completamente por el nombre de rama corregido.
+
+## Rebasar (Rebasing)
+
+En Git, hay **dos formas principales de integrar los cambios de una rama en otra**: el `merge` y el `rebase`.
+En esta sección aprenderás qué es el rebase, cómo hacerlo, por qué es una herramienta increíble y en qué
+casos no querrás usarla.
+
+Veamos el siguiente historial, puedes ver que **divergiste tu trabajo e hiciste commits en dos ramas diferentes**:
+
+````bash
+$ git lg
+* 05cde4d (HEAD -> experiment) C4 - Cambio en experiment
+| * c33b58a (main) C3 - Commit de main
+|/
+* 6a7afa3 (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Como vimos anteriormente, la forma más sencilla de integrar las ramas es usando el comando `git merge`, pero en esta
+oportunidad veremos el uso del comando `rebase` como una manera distinta de poder integrar ambas ramas.
+
+Podemos tomar los cambios que se introdujeron en la rama `experiment (C4)` y volver a aplicarlos sobre la rama
+`main (C3)`. En git, eso se llama `rebase`.
+
+Con el **comando rebase**, puedes tomar todos los cambios que fueron confirmados en una rama y volver a aplicarlos en
+una rama diferente.
+
+Para este ejemplo, nos posicionamos en la rama `experiment` y luego rebasamos a la rama `main`:
+
+````bash
+$ git checkout experiment
+Switched to branch 'experiment'
+
+$ git rebase main
+Successfully rebased and updated refs/heads/experiment.
+
+$ git lg
+* aad2f21 (HEAD -> experiment) C4 - Cambio en experiment
+* c33b58a (main) C3 - Commit de main
+* 6a7afa3 (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+En este punto, puede volver a la rama `main` y hacer un `fast-forward`:
+
+````bash
+$ git checkout main
+
+$ git merge experiment
+Updating c33b58a..aad2f21
+Fast-forward
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+````
+
+Ahora, la instantánea apuntada por C4' es exactamente la misma que la apuntada por C5 en el ejemplo de fusión. No hay
+diferencia en el producto final de la integración, pero el `rebase` hace que la historia sea más limpia. Si
+examina el registro de una rama rebasada, **parece una historia lineal**: parece que todo el trabajo ocurrió en serie,
+incluso cuando originalmente ocurrió en paralelo.
+
+````bash
+git lg
+* aad2f21 (HEAD -> main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 (origin/main) C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
