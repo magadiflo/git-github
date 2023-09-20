@@ -1916,3 +1916,30 @@ git lg
 > **Regla de oro de Git Rebase**<br>
 > `No lo utilices nunca en ramas públicas`
 
+## Distributed Git - Contribuir a un proyecto
+
+La principal dificultad a la hora de describir cómo contribuir a un proyecto son las numerosas variaciones sobre cómo
+hacerlo. Debido a que Git es muy flexible, la gente puede y suele trabajar junta de muchas maneras, y es problemático
+describir cómo deberías contribuir - cada proyecto es un poco diferente. Algunas de las variables implicadas son el
+número de colaboradores activos, el flujo de trabajo elegido, tu acceso a las confirmaciones y, posiblemente, el método
+de contribución externa.
+
+### Directrices de confirmación
+
+Aquí va una nota rápida sobre los mensajes de confirmación. Tener una buena guía para crear commits y ceñirse a ella
+hace que trabajar con Git y colaborar con otros sea mucho más fácil.
+
+En primer lugar, **tus envíos no deben contener ningún error de espacio en blanco**. Git proporciona una forma sencilla
+de comprobarlo: antes de confirmar, ejecuta `git diff --check`, que **identifica posibles errores de espacio en blanco**
+y los lista por ti.
+
+Si ejecutas ese comando antes de confirmar, **puedes saber si estás a punto de confirmar problemas de espacio en
+blanco** que puedan molestar a otros desarrolladores.
+
+![salida-git_diff_--check](./assets/salida-git_diff_--check.png)
+
+Como regla general, **tus mensajes deberían empezar con una sola línea de no más de 50 caracteres** que describa el
+conjunto de cambios de forma concisa, seguida de una línea en blanco, seguida de una explicación más detallada.
+
+Esta es una buena pauta a seguir. **Escribe tu mensaje de confirmación en imperativo:** `"Fix bug"` (corregir error) y
+`no "Fixed bug"` (error corregido) o `"Fixes bug"` (corrige error).
