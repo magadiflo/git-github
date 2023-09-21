@@ -1943,3 +1943,421 @@ conjunto de cambios de forma concisa, seguida de una línea en blanco, seguida d
 
 Esta es una buena pauta a seguir. **Escribe tu mensaje de confirmación en imperativo:** `"Fix bug"` (corregir error) y
 `no "Fixed bug"` (error corregido) o `"Fixes bug"` (corrige error).
+
+### Equipo pequeño privado
+
+La configuración más sencilla es la de un proyecto privado con uno o dos desarrolladores. "Privado", en este contexto,
+significa de código cerrado - no accesible al mundo exterior. Tú y los otros desarrolladores tenéis acceso push al
+repositorio.
+
+Veamos **cómo podría ser cuando dos desarrolladores empiezan a trabajar juntos con un repositorio compartido.**
+
+1. El desarrollador `magadiflo` crea el repositorio remoto en `GitHub` llamado `project-test`:
+
+![repo-remoto-private-small-team](./assets/repo-remoto-private-small-team.png)
+
+2. El mismo desarrollador `magadiflo` **clona el repositorio, hace un cambio, y lo confirma localmente.**
+
+`Máquina de magadiflo`
+
+````bash
+$ git clone https://github.com/magadiflo/project-test.git
+Cloning into 'project-test'...
+warning: You appear to have cloned an empty repository.
+
+$ git s
+## No commits yet on main...origin/main [gone]
+?? index.html
+
+$ git add .
+
+$ git commit -m "C1 (magadiflo) - Crea página de inicio"
+````
+
+3. El desarrollador `magadiflo` que es dueño del repositorio invita al desarrollador `magadiflo-java` a colaborar en él.
+   El desarrollador `magadiflo-java` deberá aceptar la invitación que le llegará a su correo:
+
+![invitar-colaborar.png](./assets/invitar-colaborar.png)
+
+4. El segundo desarrollador, `magadiflo-java`, hace lo mismo: clona el repositorio y confirma un cambio. Pero antes,
+   como soy yo el que simula ser el otro desarrollador, debo modificar el `user.name y user.email` ingresando dentro
+   del repositorio local clonado para trabajar con este nuevo usuario, ya que las configuraciones globales están
+   con `magadiflo`:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git clone https://github.com/magadiflo/project-test.git
+Cloning into 'project-test'...
+warning: You appear to have cloned an empty repository.
+
+$ cd project-test\
+
+$ git config user.email martin.g.diaz.flores@gmail.com
+
+$ git config user.name MagadifloJava
+
+$ git config user.name
+MagadifloJava
+
+$ git config user.email
+martin.g.diaz.flores@gmail.com
+
+$ git add .
+
+$ git s
+## No commits yet on main...origin/main [gone]
+A  contact.css
+A  contact.html
+
+$ git commit -m "C2 (MagadifloJava) - Página y estilo de contactos"
+
+$ git lg
+* 2a910e3 (HEAD -> main) C2 (MagadifloJava) - Página y estilo de contactos
+````
+
+5. Ahora, `magadiflo-java` envía su trabajo al servidor, que funciona perfectamente:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git push -u origin main
+...
+To https://github.com/magadiflo/project-test.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+$ git lg
+* 2a910e3 (HEAD -> main, origin/main) C2 (MagadifloJava) - Página y estilo de contactos
+````
+
+6. Continuando con este ejemplo, poco después, `magadiflo` hace algunos cambios, los confirma en su repositorio
+   local, e intenta enviarlos al mismo servidor:
+
+`Máquina de magadiflo`
+
+````bash
+$ git lg
+* cca4eab (HEAD -> main) C1 (magadiflo) - Crea página de inicio
+
+$ git push -u origin main
+To https://github.com/magadiflo/project-test.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/magadiflo/project-test.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+````
+
+En este caso, el push de `magadiflo` falla debido al push anterior que `magadiflo-java` hizo al repositorio remoto.
+Para corregir este problema, **en Git, primero debemos fusionar los cambios localmente**. En otras palabras, `magadiflo`
+debe primero obtener los cambios de `magadiflo-java` y fusionarlos en su repositorio local antes de que se le permita
+hacer push.
+
+7. Como primer paso, `magadiflo` recupera **(fetch)** el trabajo de `magadiflo-java` (esto sólo recupera el trabajo
+   upstream de `magadiflo-java`, aún no lo fusiona con el trabajo de `magadiflo`):
+
+`Máquina de magadiflo`
+
+````bash
+$ git lg
+* cca4eab (HEAD -> main) C1 (magadiflo) - Crea página de inicio
+
+$ git fetch origin
+...
+From https://github.com/magadiflo/project-test
+ * [new branch]      main       -> origin/main
+
+$ git lg
+* 2a910e3 (origin/main) C2 (MagadifloJava) - Página y estilo de contactos
+* cca4eab (HEAD -> main) C1 (magadiflo) - Crea página de inicio
+````
+
+8. Ahora `magadiflo` puede fusionar los commits de `magadiflo-java` que trajo dentro de su repositorio local:
+
+`Máquina de magadiflo`
+
+````bash
+git lg
+* 2a910e3 (origin/main) C2 (MagadifloJava) - Página y estilo de contactos
+* cca4eab (HEAD -> main) C1 (magadiflo) - Crea página de inicio
+
+$ git merge origin/main
+fatal: refusing to merge unrelated histories
+
+$ git merge --allow-unrelated-histories origin/main
+Merge made by the 'ort' strategy.
+ contact.css  |  3 +++
+ contact.html | 12 ++++++++++++
+ 2 files changed, 15 insertions(+)
+ create mode 100644 contact.css
+ create mode 100644 contact.html
+ 
+$ git lg
+*   5c11eff (HEAD -> main) Merge remote-tracking branch 'origin/main'
+|\
+| * 2a910e3 (origin/main) C2 (MagadifloJava) - Página y estilo de contactos
+* cca4eab C1 (magadiflo) - Crea página de inicio
+````
+
+Es importante notar que la primera vez que hicimos `git merge origin/main` nos mostró el error:
+`fatal: refusing to merge unrelated histories`. En resumen, el error ocurre porque cuando `magadiflo` creó el
+repositorio remoto, éste estaba vacío, por lo tanto, cuando `magadiflo` clonó el repositorio remoto en su máquina local,
+clonó el repositorio vacío, sin ningún historial de commits. Lo mismo pasó con el usuario `magadiflo-java`, clonó
+el repositorio vacío, sin ningún historial de commits. Luego, `magadiflo-java` mandó sus cambios al remoto, lo que
+significa que es él quien dio inicio al historial de commits. Ahora, cuando `magadiflo` trata de mandar sus cambios
+al remoto, obviamente va a fallar, ya que primero debe traer los cambios subidos por `magadiflo-java`. Luego de que
+trae esos cambios a su máquina local, `magadiflo` intenta fusionar la rama local `main` con los datos traídos del
+repositorio remoto que se alojaron en la rama `origin/main` produciéndose el error `fatal: refusing to merge
+unrelated histories`, es decir, **está rechazando fusionar los historiales no relacionados.** Y tiene sentido, porque el
+repositorio local de `magadiflo` empezó sin ningún commit del repositorio remoto, entonces cuando se intenta fusionar
+con el historial de commits que subió `magadiflo-java`, **git trata de encontrar en ambos un ancestro (commit) en común
+pero no lo encuentra produciéndose dicho mensaje de error.**
+
+Para poder forzar la fusión, teniendo en cuenta que son historiales no relacionados usamos el siguiente comando:
+
+````bash
+$ git merge --allow-unrelated-histories origin/main
+````
+
+9. En este punto, `magadiflo` podría querer probar este nuevo código para asegurarse de que nada del trabajo
+   de `magadiflo-java` afecta al suyo y, si todo parece estar bien, puede finalmente enviar el nuevo trabajo fusionado
+   al servidor:
+
+`Máquina de magadiflo`
+
+````bash
+$ git lg
+*   5c11eff (HEAD -> main) Merge remote-tracking branch 'origin/main'
+|\
+| * 2a910e3 (origin/main) C2 (MagadifloJava) - Página y estilo de contactos
+* cca4eab C1 (magadiflo) - Crea página de inicio
+
+$ git push -u origin main
+
+$ git lg
+*   5c11eff (HEAD -> main, origin/main) Merge remote-tracking branch 'origin/main'
+|\
+| * 2a910e3 C2 (MagadifloJava) - Página y estilo de contactos
+* cca4eab C1 (magadiflo) - Crea página de inicio
+````
+
+10. Mientras tanto, `magadiflo-java` ha creado una nueva rama temática llamada `issue54`, y ha hecho tres commits
+    en esa rama. Aún no ha recuperado los cambios de `magadiflo`, así que su historial de confirmaciones tiene este
+    aspecto:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git branch
+* issue54
+  main
+  
+$ git lg
+* 96a0aec (HEAD -> issue54) C5 (MagadifloJava) - Product js
+* fe96457 C4 (MagadifloJava) - Product css
+* aafd657 C3 (MagadifloJava) - Product html
+* 2a910e3 (origin/main, main) C2 (MagadifloJava) - Página y estilo de contactos
+````
+
+11. De repente, `magadiflo-java` se entera de que `magadiflo` ha subido un nuevo trabajo al servidor y quiere echarle un
+    vistazo:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git lg
+* 96a0aec (HEAD -> issue54) C5 (MagadifloJava) - Product js
+* fe96457 C4 (MagadifloJava) - Product css
+* aafd657 C3 (MagadifloJava) - Product html
+* 2a910e3 (origin/main, main) C2 (MagadifloJava) - Página y estilo de contactos
+
+$ git fetch origin
+...
+From https://github.com/magadiflo/project-test
+   2a910e3..5c11eff  main       -> origin/main
+
+$ git lg
+* 96a0aec (HEAD -> issue54) C5 (MagadifloJava) - Product js
+* fe96457 C4 (MagadifloJava) - Product css
+* aafd657 C3 (MagadifloJava) - Product html
+| *   5c11eff (origin/main) Merge remote-tracking branch 'origin/main'
+| |\
+| |/
+|/|
+* | 2a910e3 (main) C2 (MagadifloJava) - Página y estilo de contactos
+ /
+* cca4eab C1 (magadiflo) - Crea página de inicio
+````
+
+12. `magadiflo-java` cree que su rama temática está lista, pero quiere saber qué parte del trabajo de `magadiflo` tiene
+    que fusionar con su trabajo para poder hacer push. Ejecuta git log para averiguarlo:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git lg
+* 96a0aec (HEAD -> issue54) C5 (MagadifloJava) - Product js
+* fe96457 C4 (MagadifloJava) - Product css
+* aafd657 C3 (MagadifloJava) - Product html
+| *   5c11eff (origin/main) Merge remote-tracking branch 'origin/main'
+| |\
+| |/
+|/|
+* | 2a910e3 (main) C2 (MagadifloJava) - Página y estilo de contactos
+ /
+* cca4eab C1 (magadiflo) - Crea página de inicio
+
+$ git log --no-merges issue54..origin/main
+commit cca4eab20fe73773b4418a01e1ea571c727fcf5a
+Author: Martín <magadiflo@gmail.com>
+Date:   Wed Sep 20 20:14:46 2023 -0500
+
+    C1 (magadiflo) - Crea página de inicio
+````
+
+La sintaxis `issue54..origin/main` **es un filtro de registro que pide a Git que muestre sólo aquellos commits que están
+en la última rama (en este caso origin/main) y que no están en la primera rama (en este caso issue54).**
+
+De la salida anterior, podemos ver que hay una sola confirmación que `magadiflo` ha hecho que `magadiflo-java` no ha
+fusionado en su trabajo local. Si fusiona `origin/main`, esa es la única confirmación que modificará su trabajo local.
+
+13. Primero (habiendo confirmado todo el trabajo en su rama tema issue54), `magadiflo-java` vuelve a su rama main en
+    preparación para integrar todo este trabajo, primero fusionando la rama **issue54** con main y luego
+    **origin/main**, al ser ambas ramas upstream, el orden no importa:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git checkout main
+
+$ git merge issue54
+
+$ git lg
+* 96a0aec (HEAD -> main, issue54) C5 (MagadifloJava) - Product js
+* fe96457 C4 (MagadifloJava) - Product css
+* aafd657 C3 (MagadifloJava) - Product html
+| *   5c11eff (origin/main) Merge remote-tracking branch 'origin/main'
+| |\
+| |/
+|/|
+* | 2a910e3 C2 (MagadifloJava) - Página y estilo de contactos
+ /
+* cca4eab C1 (magadiflo) - Crea página de inicio
+````
+
+No ocurre ningún problema; como puedes ver fue una simple fusión rápida. `magadiflo-java` ahora completa el proceso de
+fusión local fusionando el trabajo anterior de `magadiflo` que se encuentra en la rama `origin/main`:
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git merge origin/main
+
+$ git lg
+*   deffb9e (HEAD -> main) Merge remote-tracking branch 'origin/main'
+|\
+| *   5c11eff (origin/main) Merge remote-tracking branch 'origin/main'
+| |\
+| * | cca4eab C1 (magadiflo) - Crea página de inicio
+|  /
+* | 96a0aec (issue54) C5 (MagadifloJava) - Product js
+* | fe96457 C4 (MagadifloJava) - Product css
+* | aafd657 C3 (MagadifloJava) - Product html
+|/
+* 2a910e3 C2 (MagadifloJava) - Página y estilo de contactos
+````
+
+14. Ahora `origin/main` es accesible desde la rama `main` de `magadiflo-java`, por lo que debería ser capaz de hacer
+    push con éxito (suponiendo que `magadiflo` no haya hecho aún más cambios mientras tanto):
+
+`Máquina de magadiflo-java`
+
+````bash
+$ git lg
+*   deffb9e (HEAD -> main) Merge remote-tracking branch 'origin/main'
+|\
+| *   5c11eff (origin/main) Merge remote-tracking branch 'origin/main'
+| |\
+| * | cca4eab C1 (magadiflo) - Crea página de inicio
+|  /
+* | 96a0aec (issue54) C5 (MagadifloJava) - Product js
+* | fe96457 C4 (MagadifloJava) - Product css
+* | aafd657 C3 (MagadifloJava) - Product html
+|/
+* 2a910e3 C2 (MagadifloJava) - Página y estilo de contactos
+
+$ git push -u origin main
+
+$ git lg
+*   deffb9e (HEAD -> main, origin/main) Merge remote-tracking branch 'origin/main'
+|\
+| *   5c11eff Merge remote-tracking branch 'origin/main'
+| |\
+| * | cca4eab C1 (magadiflo) - Crea página de inicio
+|  /
+* | 96a0aec (issue54) C5 (MagadifloJava) - Product js
+* | fe96457 C4 (MagadifloJava) - Product css
+* | aafd657 C3 (MagadifloJava) - Product html
+|/
+* 2a910e3 C2 (MagadifloJava) - Página y estilo de contactos
+````
+
+Cada desarrollador ha hecho commit unas cuantas veces y ha fusionado con éxito el trabajo de los demás.
+
+[Más información sobre: ¿Cómo resolver el rechazo a fusionar historias no relacionadas en Git?](https://www.tutorialspoint.com/how-to-solve-refusing-to-merge-unrelated-histories-in-git)
+> **Entendiendo el error**
+>
+> Cuando intentamos combinar dos ramas en Git que no tienen ninguna conexión en sus historiales, aparece un mensaje de
+> error que dice **"Rechazando fusionar historiales no relacionados"**. Este error se produce porque **Git no puede
+> localizar un punto de inicio compartido, o "commit antepasado común", entre las ramas.**
+>
+> En palabras más sencillas, Git no está seguro de la relación entre las ramas y, por tanto, rechaza fusionarlas
+> automáticamente. Para resolver este problema, necesitamos emplear pasos adicionales, como permitir explícitamente
+> historiales no relacionados o realizar una fusión manual. Estos enfoques ayudan a Git a entender la conexión entre
+> las ramas y permiten una fusión exitosa.
+>
+> **¿Por qué ocurre?**
+>
+> El error "Refusing to merge unrelated histories" suele aparecer cuando intentamos fusionar un repositorio recién
+> creado con otro ya existente o con una rama diferente. Esta situación se produce porque los repositorios tienen
+> historias distintas, lo que hace que Git los vea como no relacionados. Como resultado, Git rechaza automáticamente la
+> fusión.
+>
+> Este error suele ocurrir en situaciones en las que estamos integrando repositorios dispares o iniciando una fusión
+> entre ramas sin historia compartida. Para superar este error, podemos permitir explícitamente los historiales no
+> relacionados utilizando el comando Git apropiado. Al hacerlo, podemos fusionar con éxito los repositorios y continuar
+> con nuestros esfuerzos de colaboración.
+>
+> **Solución 1**
+>
+> Para fusionar los historiales no relacionados, podemos usar la opción `--allow-unrelated-histories`. Esto le dice a
+> Git que ignore las historias no relacionadas y proceda con la fusión.
+>
+> **Solución 2**
+>
+> En la solución 1 aplicamos la opción `--allow-unrelated-histories` luego de haber traído los cambios con
+> `git fetch origin`. En este caso, podemos realizar la fusión directamente con
+> `git pull origin main --allow-unrelated-histories`. Recordemos que `git pull = git fetch + git merge`.
+>
+> **Solución 3**
+>
+> Más que una solución, creo lo diría como una recomendación; cuando creemos un repositorio, el dueño del repositorio o
+> alguien debería de **inicializarlo con al menos 1 commit**, de esa forma, cuando los demás desarrolladores clonen
+> el repositorio remoto, tengan en su repositorio local al menos 1 commit que será común a todos, **de esa forma
+> evitamos las historias no relacionadas.**
+
+**Diferencias entre git pull y Git fetch**
+> **Git fetch**
+>
+> `git fetch` descargará el contenido remoto **sin modificar el estado del repositorio local.**
+>
+> **Git pull**
+>
+> `git pull` descargará el contenido remoto y **tratará inmediatamente de cambiar el estado del repositorio local para
+> reflejar ese contenido.**
+>
+> `git pull` es igual a un `git fetch + git merge`
+
