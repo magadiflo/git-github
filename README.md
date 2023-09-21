@@ -2361,3 +2361,351 @@ Cada desarrollador ha hecho commit unas cuantas veces y ha fusionado con éxito 
 >
 > `git pull` es igual a un `git fetch + git merge`
 
+### Gestión de equipo privado
+
+En el siguiente escenario, verás los roles de los colaboradores en un grupo privado más grande. Aprenderás a trabajar en
+un entorno en el que pequeños grupos colaboran en características, tras lo cual esas contribuciones basadas en el equipo
+son integradas por otra parte.
+
+Digamos que `magadiflo y magadiflo-java` están trabajando juntos en un feature (llamémosla **"featureA"**), mientras
+que `magadiflo` y un tercer desarrollador, `Alison`, están trabajando en una segunda (digamos, **"featureB"**). En este
+caso, la empresa está utilizando un tipo de flujo de trabajo de integración-manager en el que **el trabajo de los grupos
+individuales será integrado solo por ciertos ingenieros**, y **la rama main del repositorio principal sólo puede ser
+actualizada por esos ingenieros**. En este escenario, todo el trabajo se realiza en ramas basadas en el equipo y se
+juntan por los integradores más tarde.
+
+**Sigamos solo el flujo de trabajo de** `magadiflo` mientras trabaja en sus dos funcionalidades, **colaborando en
+paralelo con dos desarrolladores diferentes en este entorno.** Asumiendo que **el repositorio remoto ya fue creado y
+está inicializado con un commit** (solo contiene el archivo **README.md**).
+
+1. El desarrollador `magadiflo` clona el repositorio remoto en su local y decide trabajar primero en el **featureA**.
+   Crea una nueva rama para la funcionalidad y trabaja en ella:
+
+````bash
+$ git lg
+* 85bbfdc (HEAD -> main, origin/main) C1 - Inicio del proyecto
+
+$ git checkout -b featureA
+Switched to a new branch 'featureA'
+
+$ git lg
+* 85bbfdc (HEAD -> featureA, origin/main, main) C1 - Inicio del proyecto
+
+$ touch estilos.css
+
+$ git add .
+
+$ git commit -m "C2 [magadiflo] estilos.css"
+````
+
+2. En este punto, él necesita compartir su trabajo con `magadiflo-java`, así que empuja sus commits de la
+   rama **featureA** al servidor. `Magadiflo` no tiene acceso push a la rama main - sólo los integradores lo tienen -
+   por lo que tiene que hacer push a otra rama con el fin de colaborar con `magadiflo-java`:
+
+````bash
+$ git lg
+* c94730a (HEAD -> featureA) C2 [magadiflo] estilos.css
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git push -u origin featureA
+
+$ git lg
+* c94730a (HEAD -> featureA, origin/featureA) C2 [magadiflo] estilos.css
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+3. `Magadiflo` envía un correo electrónico a `magadiflo-java` para decirle que ha empujado un poco de trabajo en una
+   rama llamada **featureA** y que puede verlo ahora. Mientras espera la respuesta de `magadiflo-java`, `magadiflo`
+   decide empezar a trabajar en la **featureB** con **alison**. Para empezar, inicia una nueva rama de la
+   característica, `basándola en la rama main del servidor`:
+
+````bash
+$ git lg
+* c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+* 85bbfdc (HEAD -> main, origin/main) C1 - Inicio del proyecto
+
+$ git fetch origin
+
+$ git checkout -b featureB origin/main
+
+$ git lg
+* c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+* 85bbfdc (HEAD -> featureB, origin/main, main) C1 - Inicio del proyecto
+````
+
+Es importante resaltar como se indicó en el punto 3. el comando `git checkout -b featureB origin/main` crea una nueva
+rama llamada **featureB** en tu repositorio local, pero **en lugar de basarse en la rama actual, se basa en la versión
+más reciente de la rama main en el repositorio remoto origin**, por esa razón es que previamente ejecutamos el comando
+`git fetch origin`, para traer los cambios actuales del repositorio remoto.
+
+4. Ahora `magadiflo` hace un par de commits en la rama **featureB**:
+
+````bash
+$ git commit -m "C3 [magadiflo] scripts.js"
+
+$ git commit -m "C4 [magadiflo] image"
+
+$ git lg
+* 54fdacb (HEAD -> featureB) C4 [magadiflo] image
+* 579c238 C3 [magadiflo] scripts.js
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+5. `Magadiflo` está listo para enviar su trabajo, pero recibe un correo electrónico de `Alison` informándole que una
+   rama con algún trabajo inicial de **"featureB"** ya se envió al servidor como la rama **featureBee**.  `Magadiflo`
+   necesita fusionar esos cambios con los suyos antes de que pueda enviar su trabajo al servidor. `Magadiflo` primero
+   obtiene los cambios de `Alison` con git fetch:
+
+````bash
+$ git lg
+* 54fdacb (HEAD -> featureB) C4 [magadiflo] image
+* 579c238 C3 [magadiflo] scripts.js
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git fetch origin
+From https://github.com/magadiflo/project-test-team
+ * [new branch]      featureBee -> origin/featureBee
+ 
+$ git lg
+* a13c8a7 (origin/featureBee) C5 [Alison] html
+| * 54fdacb (HEAD -> featureB) C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+6. Asumiendo que `magadiflo` todavía está en su rama **featureB**, ahora puede fusionar el trabajo de `Alison` en esa
+   rama con `git merge`:
+
+````bash
+$ git lg
+* a13c8a7 (origin/featureBee) C5 [Alison] html
+| * 54fdacb (HEAD -> featureB) C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git merge origin/featureBee
+
+$ git lg
+*   b1e6058 (HEAD -> featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+|\
+| * a13c8a7 (origin/featureBee) C5 [Alison] html
+* | 54fdacb C4 [magadiflo] image
+* | 579c238 C3 [magadiflo] scripts.js
+|/
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+7. En este punto, `magadiflo` quiere empujar todo este trabajo fusionado **"featureB"** de nuevo al servidor, pero no
+   quiere simplemente empujar su propia rama featureB. Más bien, dado que `Alison` ya ha iniciado una rama **"
+   featureBee"**, `magadiflo` quiere empujar a esa rama, lo que hace con `git push -u origin featureB:featureBe`:
+
+````bash
+$ git lg
+*   b1e6058 (HEAD -> featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+|\
+| * a13c8a7 (origin/featureBee) C5 [Alison] html
+* | 54fdacb C4 [magadiflo] image
+* | 579c238 C3 [magadiflo] scripts.js
+|/
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git push -u origin featureB:featureBee
+...
+To https://github.com/magadiflo/project-test-team.git
+   a13c8a7..b1e6058  featureB -> featureBee
+branch 'featureB' set up to track 'origin/featureBee'.
+
+$ git lg
+*   b1e6058 (HEAD -> featureB, origin/featureBee) Merge remote-tracking branch 'origin/featureBee' into featureB
+|\
+| * a13c8a7 C5 [Alison] html
+* | 54fdacb C4 [magadiflo] image
+* | 579c238 C3 [magadiflo] scripts.js
+|/
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+Al ejecutar `git push -u origin featureB:featureBee`, estás enviando la **rama local "featureB" al repositorio remoto
+"origin" y la estás renombrando como "featureBee" en el repositorio remoto**, eso siempre y cuando el "featureBee" no
+exista en el repositorio remoto, pero como en nuestro caso la rama remota **"featureBee"** ya existe, **Git**
+intentará actualizarla con los cambios de la rama local "featureB". Además, estamos configurando la rama local
+**featureB** para que haga un seguimiento de la rama remota **featureBee** (esto al utilizar el `-u` o `--set-upstream`,
+lo que facilita el seguimiento y la sincronización futura de cambios entre las dos ramas. Esto significa que en futuros
+comandos `git push o git pull`, Git sabrá a qué rama remota debe enviar o desde cuál rama remota debe obtener cambios
+sin que tengas que especificar explícitamente la rama remota cada vez.
+
+8. De repente, `magadiflo` recibe un email de `magadiflo-java`, que le dice que ha enviado algunos cambios a la rama
+   **featureA** en la que están colaborando, y le pide a `magadiflo` que les eche un vistazo. De nuevo, `magadiflo`
+   ejecuta un simple `git fetch` para obtener todo el nuevo contenido del servidor, incluyendo (por supuesto) el último
+   trabajo de `magadiflo-java`:
+
+````bash
+$ git lg
+*   b1e6058 (HEAD -> featureB, origin/featureBee) Merge remote-tracking branch 'origin/featureBee' into featureB
+|\
+| * a13c8a7 C5 [Alison] html
+* | 54fdacb C4 [magadiflo] image
+* | 579c238 C3 [magadiflo] scripts.js
+|/
+| * c94730a (origin/featureA, featureA) C2 [magadiflo] estilos.css
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git fetch origin
+...
+From https://github.com/magadiflo/project-test-team
+   c94730a..ab27ef8  featureA   -> origin/featureA
+
+$ git lg
+* ab27ef8 (origin/featureA) C6 [MagadifloJAVA] modificando estilos.css
+* c94730a (featureA) C2 [magadiflo] estilos.css
+| *   b1e6058 (HEAD -> featureB, origin/featureBee) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| |/
+|/|
+| * 54fdacb C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+9. `Magadiflo` puede mostrar el registro del nuevo trabajo de `Magadiflo-java` comparando el contenido de la rama
+   **featureA** recién obtenida con su copia local de la misma rama:
+
+````bash
+git lg
+* ab27ef8 (origin/featureA) C6 [MagadifloJAVA] modificando estilos.css
+* c94730a (featureA) C2 [magadiflo] estilos.css
+| *   b1e6058 (HEAD -> featureB, origin/featureBee) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| |/
+|/|
+| * 54fdacb C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git log featureA..origin/featureA
+commit ab27ef872e179ededd02d21fbceb957a76edacc1 (origin/featureA)
+Author: MagadifloJava <martin.g.diaz.flores@gmail.com>
+Date:   Thu Sep 21 13:50:55 2023 -0500
+
+    C6 [MagadifloJAVA] modificando estilos.css
+
+````
+
+10. Si a `Magadiflo` le gusta lo que ve, puede fusionar el nuevo trabajo de `Magadiflo-java` en su rama local
+    **featureA** con:
+
+````bash
+$ git checkout featureA
+
+$ git lg
+* ab27ef8 (origin/featureA) C6 [MagadifloJAVA] modificando estilos.css
+* c94730a (HEAD -> featureA) C2 [magadiflo] estilos.css
+| *   b1e6058 (origin/featureBee, featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| |/
+|/|
+| * 54fdacb C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git merge origin/featureA
+
+$ git lg
+* ab27ef8 (HEAD -> featureA, origin/featureA) C6 [MagadifloJAVA] modificando estilos.css
+* c94730a C2 [magadiflo] estilos.css
+| *   b1e6058 (origin/featureBee, featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| |/
+|/|
+| * 54fdacb C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+11. Por último, `Magadiflo` podría querer hacer un par de cambios menores a todo ese contenido fusionado, por lo que es
+    libre de hacer esos cambios, confirmarlos en su rama local **featureA**, y enviar el resultado final de nuevo al
+    servidor:
+
+````bash
+$ git commit -m "C7 [magadiflo] modificando estilos.css"
+
+$ git lg
+* 0df888f (HEAD -> featureA) C7 [magadiflo] modificando estilos.css
+* ab27ef8 (origin/featureA) C6 [MagadifloJAVA] modificando estilos.css
+* c94730a C2 [magadiflo] estilos.css
+| *   b1e6058 (origin/featureBee, featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| |/
+|/|
+| * 54fdacb C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+
+$ git push
+...
+To https://github.com/magadiflo/project-test-team.git
+   ab27ef8..0df888f  featureA -> featureA
+
+$ git lg
+* 0df888f (HEAD -> featureA, origin/featureA) C7 [magadiflo] modificando estilos.css
+* ab27ef8 C6 [MagadifloJAVA] modificando estilos.css
+* c94730a C2 [magadiflo] estilos.css
+| *   b1e6058 (origin/featureBee, featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| |/
+|/|
+| * 54fdacb C4 [magadiflo] image
+| * 579c238 C3 [magadiflo] scripts.js
+|/
+* 85bbfdc (origin/main, main) C1 - Inicio del proyecto
+````
+
+En algún momento, `Magadiflo`, `Magadiflo-java` y `Alison` **informan a los integradores de que las ramas featureA y
+featureBee del servidor** están listas para su integración en la línea principal. Después de que los integradores
+fusionen estas ramas en la línea principal, **un fetch traerá el nuevo commit de fusión**, haciendo que la historia se
+vea así:
+
+````bash
+git lg
+*   5a49241 (HEAD -> main, origin/main) Merge branch 'featureB'
+|\
+| *   b1e6058 (origin/featureBee, featureB) Merge remote-tracking branch 'origin/featureBee' into featureB
+| |\
+| | * a13c8a7 C5 [Alison] html
+| * | 54fdacb C4 [magadiflo] image
+| * | 579c238 C3 [magadiflo] scripts.js
+| |/
+* | 0df888f (origin/featureA, featureA) C7 [magadiflo] modificando estilos.css
+* | ab27ef8 C6 [MagadifloJAVA] modificando estilos.css
+* | c94730a C2 [magadiflo] estilos.css
+|/
+* 85bbfdc C1 - Inicio del proyecto
+````
