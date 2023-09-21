@@ -482,9 +482,9 @@ Date:   Fri Sep 15 10:39:57 2023 -0500
 Existe una gran cantidad y variedad de opciones para el comando `git log` están disponibles para mostrarte exactamente
 lo que estás buscando. Aquí te mostraremos algunos de los más populares.
 
-El uso de`-p` o `--patch` muestra la **diferencia (salida del parche) introducida en cada commit**. También puede
-limitar la cantidad de entradas de registro que se muestran, como usar `-2` para **mostrar solo las dos últimas
-entradas:**
+El uso de`-p` o `--patch` en el comando `git log -p` muestra la **diferencia (salida del parche) introducida en cada
+commit**. También puede limitar la cantidad de entradas de registro que se muestran, como usar `-2` para **mostrar solo
+las dos últimas entradas:**
 
 ````bash
 $ git log -p -2
