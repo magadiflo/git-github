@@ -2509,7 +2509,7 @@ $ git lg
 
 7. En este punto, `magadiflo` quiere empujar todo este trabajo fusionado **"featureB"** de nuevo al servidor, pero no
    quiere simplemente empujar su propia rama featureB. Más bien, dado que `Alison` ya ha iniciado una rama **"
-   featureBee"**, `magadiflo` quiere empujar a esa rama, lo que hace con `git push -u origin featureB:featureBe`:
+   featureBee"**, `magadiflo` quiere empujar a esa rama, lo que hace con `git push -u origin featureB:featureBee`:
 
 ````bash
 $ git lg
@@ -2709,3 +2709,100 @@ git lg
 |/
 * 85bbfdc C1 - Inicio del proyecto
 ````
+
+---
+
+## Git tools - Selección de revisión
+
+### Revisiones individuales
+
+Obviamente, puedes referirte a cualquier confirmación por su hash SHA-1 completo de 40 caracteres, pero también **hay
+formas más sencillas de referirse a los commits.** En esta sección se describen las distintas formas de referirse
+a cualquier confirmación.
+
+### SHA-1 corto
+
+Git es lo suficientemente inteligente como para averiguar a qué commit te estás refiriendo **si proporcionas los
+primeros caracteres del hash SHA-1**, siempre y cuando ese **hash parcial tenga al menos cuatro caracteres y no sea
+ambiguo**; es decir, ningún otro objeto de la base de datos de objetos puede tener un hash que empiece por el mismo
+prefijo.
+
+Por ejemplo, para **examinar un commit específico** en la que sabes que has añadido cierta funcionalidad, podrías
+ejecutar primero el comando git log para localizar la confirmación:
+
+````bash
+$ git log
+commit aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6 (HEAD -> main, origin/main, experiment)
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+...
+````
+
+En este caso, **digamos que estás interesado en el commit cuyo hash empieza por aad2f21...** Puedes **inspeccionar ese
+commit** con cualquiera de las siguientes variaciones de `git show` (asumiendo que las versiones más cortas no son
+ambiguas):
+
+````bash
+$ git show aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6
+$ git show aad2f21b4e2dcb3e4cf
+$ git show aad2f2
+````
+
+Ejecutar cualquiera de los tres comandos anteriores dará siempre el mismo resultado para el commit seleccionado:
+
+````bash
+commit aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6 (HEAD -> main, origin/main, experiment)
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+diff --git a/README.md b/README.md
+index 86b5c9f..6e7a02c 100644
+--- a/README.md
++++ b/README.md
+@@ -5,7 +5,7 @@
+ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y GitHub`. Esta práctica la estoy
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+-
++Cambio en la rama experiment
+ ---
+ Primer commit!
+ Cambio en la rama main
+\ No newline at end of file
+````
+
+**Git puede averiguar una abreviatura corta y única para tus valores SHA-1**. Si pasas `--abbrev-commit` al comando
+`git log`, la salida **usará valores más cortos,** pero **los mantendrá únicos**; por defecto usa siete caracteres, pero
+los hace más largos si es necesario para mantener el SHA-1 sin ambigüedades:
+
+````bash
+$ git log --abbrev-commit
+commit aad2f21 (HEAD -> main, origin/main, experiment)
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+commit c33b58a
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:38:36 2023 -0500
+
+    C3 - Commit de main
+....
+````
+
+Otra posibilidad es usar `--oneline`:
+
+````bash
+$ git log --oneline
+aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+c33b58a C3 - Commit de main
+6a7afa3 C2 - Segundo commit
+4a1d91c C1 - Primer commit
+104cb82 Inicio
+````
+
