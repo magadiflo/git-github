@@ -2806,3 +2806,101 @@ c33b58a C3 - Commit de main
 104cb82 Inicio
 ````
 
+### Referencias a ramas
+
+**Una forma directa de referirse a un commit en particular, es si ese commit está en la punta de una rama;** en ese
+caso, puedes simplemente **usar el nombre de la rama** en cualquier comando Git que espere una referencia a un commit.
+
+Por ejemplo, si **quieres examinar el objeto de la última confirmación en una rama**, los siguientes comandos son
+equivalentes, asumiendo que la rama `feature/git-branching` apunta al commit **d10c3ea...**. En el siguiente log
+vemos parte de un historial de commits, nos centraremos en el branch `feature/git-branching`:
+
+````bash
+| |/
+|/|
+* |   ceca1d6 (origin/release-3.0.0, release-3.0.0) Merge pull request #5 from magadiflo/feature/git-branching
+|\ \
+| * | d10c3ea (origin/feature/git-branching, feature/git-branching) Los peligros de rebasar
+| * | 6b3aeaf Rebasar (Rebasing)
+| * | 6565f00 Gestión de ramas. Cambiar nombre de una rama
+| * | 3dbdf42 Conflictos básicos de fusión (Basic Merge Conflicts)
+| * | 3044799 Fusión básica (Basic Merging)
+| * | e0700a8 Basic branching
+| * | 942d611 Basic branching
+| * | f0181bc Elimina referencia remota del repositorio lcal
+| * | 1b6ad86 Eliminar una rama en remoto
+| * | 25e41f8 Eliminar una rama en local
+| * | 1151c7e Cambiar rama
+| * | 5abaea2 Creando nueva rama
+|/ /
+| *   99110b6 (tag: v2.0.0) Merge pull request #4 from magadiflo/release-2.0.0
+| |\
+| |/
+````
+
+Podemos ver el commit `d10c3ea` de dos maneras, según se menciona:
+
+````bash
+$ git show d10c3ea
+commit d10c3eaa1481958b2a469b0036087f75d9918a20 (origin/feature/git-branching, feature/git-branching)
+Author: Martín <magadiflo@gmail.com>
+Date:   Wed Sep 20 00:15:27 2023 -0500
+
+    Los peligros de rebasar
+
+diff --git a/README.md b/README.md
+index 19d75d8..02b69e8 100644
+--- a/README.md
++++ b/README.md
+@@ -1887,3 +1887,13 @@ git lg
+ * 4a1d91c C1 - Primer commit
+ * 104cb82 Inicio
++
++### Los peligros de rebasar
++
++> - **No rebase commits que existen fuera de su repositorio** y en la que las personas pueden haber basado su trabajo.
++> - Recuerda que **solo debes ejecutar git rebase en un repositorio local.** Si el rebase se hace en el repositorio
+
++ remoto, entonces puede crear muchos problemas cuando otros desarrolladores intentan sacar los últimos cambios de
++ código del repositorio remoto.
+  +> - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
++
++
+````
+
+O como se menciona en el ejemplo, **como el commit anterior está en la punta de la rama**, podemos **usar el nombre de
+su rama** en vez de su código sha-1:
+
+````bash
+$ git show feature/git-branching
+commit d10c3eaa1481958b2a469b0036087f75d9918a20 (origin/feature/git-branching, feature/git-branching)
+Author: Martín <magadiflo@gmail.com>
+Date:   Wed Sep 20 00:15:27 2023 -0500
+
+    Los peligros de rebasar
+
+diff --git a/README.md b/README.md
+index 19d75d8..02b69e8 100644
+--- a/README.md
++++ b/README.md
+@@ -1887,3 +1887,13 @@ git lg
+ * 4a1d91c C1 - Primer commit
+ * 104cb82 Inicio
++
++### Los peligros de rebasar
++
++> - **No rebase commits que existen fuera de su repositorio** y en la que las personas pueden haber basado su trabajo.
++> - Recuerda que **solo debes ejecutar git rebase en un repositorio local.** Si el rebase se hace en el repositorio
++    remoto, entonces puede crear muchos problemas cuando otros desarrolladores intentan sacar los últimos cambios de
++    código del repositorio remoto.
+     +> - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
++
++
+````
+
+Si quieres ver **a qué SHA-1 específico apunta una rama**:
+
+````bash
+$ git rev-parse feature/git-branching
+d10c3eaa1481958b2a469b0036087f75d9918a20
+````
