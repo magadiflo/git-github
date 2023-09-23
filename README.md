@@ -2904,3 +2904,82 @@ Si quieres ver **a qué SHA-1 específico apunta una rama**:
 $ git rev-parse feature/git-branching
 d10c3eaa1481958b2a469b0036087f75d9918a20
 ````
+
+### RefLog Shortnames
+
+Una de las cosas que Git hace en segundo plano mientras estás trabajando es mantener un `reflog` - **un registro de
+dónde han estado tus referencias HEAD y de rama durante los últimos meses.**
+
+Puedes ver tu reflog usando `git reflog`:
+
+````bash
+$ git reflog
+aad2f21 (HEAD -> main, origin/main, experiment) HEAD@{0}: merge experiment: Fast-forward
+c33b58a HEAD@{1}: checkout: moving from experiment to main
+aad2f21 (HEAD -> main, origin/main, experiment) HEAD@{2}: rebase (finish): returning to refs/heads/experiment
+aad2f21 (HEAD -> main, origin/main, experiment) HEAD@{3}: rebase (pick): C4 - Cambio en experiment
+c33b58a HEAD@{4}: rebase (start): checkout main
+05cde4d HEAD@{5}: checkout: moving from main to experiment
+c33b58a HEAD@{6}: checkout: moving from experiment to main
+...
+````
+
+Cada vez que tu punta de rama se actualiza por cualquier motivo, **Git almacena esa información por ti en este historial
+temporal.** También **puedes utilizar tus datos reflog para referirte a commits anteriores.**
+
+Por ejemplo, si quieres ver el quinto valor anterior del HEAD de tu repositorio, puedes usar la referencia `@{5}` que
+ves en la salida de reflog:
+
+````bash
+$ git show HEAD@{5}
+commit 05cde4d429304accd65ff20db29a460d18543e26
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+diff --git a/README.md b/README.md
+index 22fd0d8..ddbc97f 100644
+--- a/README.md
++++ b/README.md
+@@ -5,6 +5,6 @@
+ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y GitHub`. Esta práctica la estoy
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+-
++Cambio en la rama experiment
+ ---
+ Primer commit!
+\ No newline at end of file
+````
+
+Para **ver la información de reflog formateada como la salida de git log**, puedes ejecutar `git log -g`:
+
+````bash
+$  git log -g main
+commit aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6 (HEAD -> main, origin/main, experiment)
+Reflog: main@{0} (Martín <magadiflo@gmail.com>)
+Reflog message: merge experiment: Fast-forward
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+commit c33b58a00cf9f65675a9cc8844540ec788fdb27d
+Reflog: main@{1} (Martín <magadiflo@gmail.com>)
+Reflog message: commit: C3 - Commit de main
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:38:36 2023 -0500
+
+    C3 - Commit de main
+
+...
+````
+
+**NOTA**
+> Es importante tener en cuenta que **la información de reflog es estrictamente local - es un registro solo de lo que ha
+> hecho en su repositorio.** Las referencias no serán las mismas en la copia del repositorio de otra persona; además,
+> justo después de clonar inicialmente un repositorio, tendrás un reflog vacío, ya que aún no se ha producido ninguna
+> actividad en tu repositorio. Ejecutar git show HEAD@{2.months.ago} te mostrará la confirmación correspondiente solo si
+> clonaste el proyecto hace al menos dos meses - si lo clonaste más recientemente, sólo verás tu primera confirmación
+> local.
