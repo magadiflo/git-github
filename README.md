@@ -3160,3 +3160,139 @@ no desde refC**, puede utilizar cualquiera de las dos:
 $ git log refA refB ^refC
 $ git log refA refB --not refC
 ````
+
+## Git tools - Stashing and Cleaning
+
+### Stashing and Cleaning (almacenamiento y limpieza)
+
+A menudo, cuando has estado trabajando en parte de tu proyecto, las cosas están en un estado desordenado y **quieres
+cambiar de rama un rato para trabajar en otra cosa**. El problema es que **no quieres hacer un commit** de trabajo
+a medio hacer sólo para poder volver a este punto más tarde. La respuesta a este problema es el comando `git stash`.
+
+`Stashing` toma el estado sucio de tu `working directory` - es decir, **tus archivos de seguimiento modificados y
+cambios en staged** - y lo guarda en una pila de cambios sin terminar que puedes volver a aplicar en cualquier momento
+**(incluso en una rama diferente).**
+
+**NOTA**: Migración a `git stash push`
+
+> Desde finales de octubre de 2017, ha habido una amplia discusión en la lista de correo de Git, en la que el comando
+> `git stash save` **está siendo obsoleto** en favor de la **alternativa** existente `git stash push`. La razón
+> principal de esto es que `git stash push` **introduce la opción de almacenar pathpecs seleccionados**, algo
+> que `git stash save` **no soporta.**
+
+### Stashing tu trabajo
+
+**Para demostrar el stashing**, entrarás en tu proyecto y empezarás a trabajar en un par de archivos y posiblemente
+agregues uno de ellos al **área de staging**. Si ejecutas `git status`, podrás ver tu estado sucio:
+
+````bash
+$ git status
+On branch experiment
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        modified:   src/main/resources/application.properties
+````
+
+**Ahora quieres cambiar de rama, pero no quieres confirmar todavía en lo que has estado trabajando**. Incluso si
+intentamos cambiar de rama sin hacer **commit** (porque no queremos hacer commit aún), git nos mostrará un error:
+
+````bash
+$ git checkout main
+error: Your local changes to the following files would be overwritten by checkout:
+        README.md
+Please commit your changes or stash them before you switch branches.
+Aborting
+````
+
+Entonces, lo que debemos hacer es almacenar (stash) los cambios. **Para insertar un nuevo stash en tu pila**,
+ejecuta `git stash` o `git stash push`:
+
+````bash       
+$ git stash push -m "HU-2 modificando clase principal y de propiedades"
+Saved working directory and index state On experiment: HU-2 modificando clase principal y de propiedades
+````
+
+Ahora puede ver que su **working directory** está limpio:
+
+````bash
+$ git status
+On branch experiment
+nothing to commit, working tree clean
+````
+
+**En este punto, puedes cambiar de rama y trabajar en otro sitio;** tus cambios se almacenan en tu pila. **Para ver qué
+stashes has almacenado**, puedes usar `git stash list`:
+
+````bash
+$ git stash list
+stash@{0}: On experiment: HU-2 modificando clase principal y de propiedades
+````
+
+**Puedes volver a aplicar el que acabas de almacenar** usando el comando que se muestra en la ayuda del comando stash
+original: `git stash apply`.
+
+````bash
+$ git stash apply
+On branch experiment
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+        modified:   src/main/resources/application.properties
+
+no changes added to commit (use "git add" and/or "git commit -a")
+````
+
+Puedes ver que Git re-modifica los archivos que revertiste cuando guardaste el stash. En este caso, tenías un directorio
+de trabajo limpio cuando intentaste aplicar el stash, e intentaste aplicarlo en la misma rama en la que lo guardaste.
+**Puedes guardar un stash en una rama, cambiar a otra rama más tarde, y tratar de volver a aplicar los cambios.**
+También puedes tener archivos modificados y no comprometidos en tu directorio de trabajo cuando apliques un stash -
+**Git te da conflictos de fusión si algo ya no se aplica limpiamente.**
+
+Los cambios en tus archivos se han re-aplicado, pero **el archivo que habías colocado** en el `área de staging` **no se
+ha vuelto a preparar**. Para ello, debes ejecutar el comando `git stash apply` con la opción `--index` para **indicarle
+al comando que intente re-aplicar los cambios escenificados**.
+
+En este caso, supongamos que aún no hemos aplicado los cambios que almacenamos en el **stash**, entonces, para poder
+recuperar todos esos cambios almacenados y **se restauren en su posición original**, ejecutamos:
+
+````bash
+git stash apply --index
+On branch experiment
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        modified:   src/main/resources/application.properties
+````
+
+**La opción apply solo intenta aplicar el trabajo almacenado** - usted **continúa teniéndolo en su pila**.
+**Para eliminarlo**, puedes ejecutar `git stash drop` **con el nombre del stash a eliminar:**
+
+````bash
+$ git stash list
+stash@{0}: On experiment: HU-2 modificando clase principal y de propiedades
+
+$ git stash drop stash@{0}
+Dropped stash@{0} (e52f7851999e82b70db2e91144316cdcc4230798)
+````
+
+**NOTA 1**
+> También puedes ejecutar `git stash pop` para aplicar el stash y luego eliminarlo inmediatamente de tu pila.
+
+**NOTA 2**
+> Si tenemos varios stashes almacenados en la pila, de forma predeterminada, **git aplicará el último stash creado**
+> `stash@{0}`. Ahora, si queremos aplicar un stash en específico debemos ser explícitos:
+> `git stash apply stash@{5} --index`
+
