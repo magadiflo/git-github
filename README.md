@@ -3100,3 +3100,63 @@ index 5873f96..22fd0d8 100644
 +Primer commit!
 \ No newline at end of file
 ````
+
+### Rangos de confirmación
+
+**Veamos cómo especificar rangos de confirmaciones.** Esto es particularmente útil para gestionar tus ramas - si tienes
+muchas ramas, puedes usar especificaciones de rangos para responder a preguntas
+como, `"¿Qué trabajo hay en esta rama que aún no he fusionado en mi rama main?"`
+
+### Doble punto ..
+
+**La especificación de rango más común es la sintaxis de doble punto.** Básicamente, pide a Git que resuelva un rango
+de confirmaciones que son alcanzables desde una confirmación pero no desde otra. Por ejemplo, digamos que tienes un
+historial de confirmaciones que se parece al ejemplo siguiente de historial para selección de rango.
+
+````bash
+$ git lg
+* d08ed69 (HEAD -> main) C8 - Modificación
+* 35a8f6e C7 - Modificación
+| * 66bb5a6 (experiment) C6 - Modificación
+| * c6a1b53 C5 - Modificación
+|/
+* aad2f21 (origin/main) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Digamos que quieres ver **qué hay en tu rama experiment que aún no se ha fusionado en tu rama main**. Puedes pedirle a
+Git que te muestre un registro de solo aquellos commits con `main..experiment` - eso significa **"todos los commits
+accesibles desde experiment que no son accesibles desde main".**
+
+````bash
+$ git lg main..experiment
+* 66bb5a6 (experiment) C6 - Modificación
+* c6a1b53 C5 - Modificación
+````
+
+### Múltiples puntos
+
+La sintaxis de doble punto es útil como abreviatura, pero quizás quieras especificar más de dos ramas para indicar tu
+revisión, como por ejemplo ver qué commits hay en cualquiera de las varias ramas que no están en la rama en la que estás
+actualmente. Git te permite hacer esto utilizando el carácter ^ o --not antes de cualquier referencia de la que no
+quieras ver los commits alcanzables.
+
+Así, los tres comandos siguientes son equivalentes:
+
+````bash
+$ git log refA..refB
+$ git log ^refA refB
+$ git log refB --not refA
+````
+
+Esto es bueno porque con esta sintaxis puedes especificar más de dos referencias en tu consulta, lo que no puedes hacer
+con la sintaxis de doble punto. Por ejemplo, **si desea ver todas las confirmaciones accesibles desde refA o refB, pero
+no desde refC**, puede utilizar cualquiera de las dos:
+
+````bash
+$ git log refA refB ^refC
+$ git log refA refB --not refC
+````
