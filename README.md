@@ -2983,3 +2983,52 @@ Date:   Tue Sep 19 23:38:36 2023 -0500
 > actividad en tu repositorio. Ejecutar git show HEAD@{2.months.ago} te mostrará la confirmación correspondiente solo si
 > clonaste el proyecto hace al menos dos meses - si lo clonaste más recientemente, sólo verás tu primera confirmación
 > local.
+
+### Referencias ancestrales
+
+**La otra forma principal de especificar una confirmación es a través de su ascendencia**. Si colocas un
+**^ (circunflejo)** al final de una referencia, **Git la resuelve para referirse al padre de esa confirmación**.
+Supongamos que miras el historial de tu proyecto:
+
+````bash
+$ git lg
+* aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+A continuación, puede ver la confirmación anterior especificando `HEAD^`, que significa `"el padre de HEAD"`:
+
+````bash
+$ git show HEAD^^
+commit c33b58a00cf9f65675a9cc8844540ec788fdb27d
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:38:36 2023 -0500
+
+    C3 - Commit de main
+
+diff --git a/README.md b/README.md
+index 22fd0d8..86b5c9f 100644
+--- a/README.md
++++ b/README.md
+@@ -7,4 +7,5 @@ realizando usando la documentación oficial de`Git` y el repositorio donde estoy
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+ ---
+-Primer commit!
+\ No newline at end of file
++Primer commit!
++Cambio en la rama main
+\ No newline at end of file
+````
+
+**NOTA**
+> **Escapar el ^ circunflejo en Windows**. En Windows, en cmd.exe, `^` es un carácter especial y debe tratarse de
+> forma diferente. Puede duplicarlo o poner la referencia de confirmación entre comillas:
+>
+> **$ git show HEAD^**     # will NOT work on Windows<br>
+> **$ git show HEAD^^**    # OK<br>
+> **$ git show "HEAD^"**   # OK<br>
+
