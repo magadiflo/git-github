@@ -3296,3 +3296,103 @@ Dropped stash@{0} (e52f7851999e82b70db2e91144316cdcc4230798)
 > `stash@{0}`. Ahora, si queremos aplicar un stash en específico debemos ser explícitos:
 > `git stash apply stash@{5} --index`
 
+### Stashing de archivos no rastreados
+
+Algo que podemos hacer con el **stash** es **almacenar los archivos no rastreados así como los rastreados.** Por
+defecto, `git stash` **solo almacena los archivos modificados y los archivos rastreados**.
+
+Si especificas `--include-untracked` o `-u`, **git incluirá los archivos sin seguimiento (untracked)** en el stash que
+se está creando.
+
+En el ejemplo siguiente tenemos tres archivos, uno está en el **staging area**, los otros dos están
+en el **working directory**, pero de estos últimos dos, uno está siendo rastreado por git y el otro no, es decir
+está en estado **untracked**:
+
+````bash
+$ git status
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Agregando el `--include-untracked` o `-u` podemos crear el stash incluyendo el archivo sin seguimiento **(untracked)**:
+
+````bash
+$ git stash push --include-untracked -m "HU-3 funcionalidad del controlador de producto"
+Saved working directory and index state On experiment: HU-3 funcionalidad del controlador de producto
+
+$ git stash list
+stash@{0}: On experiment: HU-3 funcionalidad del controlador de producto
+
+$ git status
+On branch experiment
+nothing to commit, working tree clean
+````
+
+En este punto, podemos cambiar de rama, hacer otras funcionalidades, etc.. Volvemos a nuestra rama `experiment` y
+recuperamos o aplicamos del stash, nuestros archivos almacenados:
+
+````bash
+$ git stash list
+stash@{0}: On experiment: HU-3 funcionalidad del controlador de producto
+
+$ git stash apply stash@{0} --index
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Como observamos en el ejemplo anterior, hemos recuperado tal cual nuestros archivos como lo habíamos dejado antes de
+crear el stash.
+
+### Stashing de archivos ignorados
+
+Sin embargo, **al incluir archivos sin seguimiento (untracked) en el stash no se incluirán los archivos ignorados
+explícitamente**; **para incluir adicionalmente los archivos ignorados (archivos que fueron definidos en el
+.gitignore)**, usa `--all` (o simplemente -a):
+
+````bash
+$ git status
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Luego de ver el estado en el que nos encontramos, utilizamos el `git stash push` con el `--all` para **crear el stash
+con los archivos ignorados, archivos con seguimiento (tracked) y archivos sin seguimiento (untracked):**
+
+````bash
+$ git stash push --all --m "Incluye archivos ignorados"
+warning: in the working copy of '.idea/workspace.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'HELP.md', LF will be replaced by CRLF the next time Git touches it
+Saved working directory and index state On experiment: Incluye archivos ignorados
+````
+
+Luego, podemos recuperar del stash, todos los archivos almacenados:
+
+````bash
+$ git stash apply stash@{0} --index
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
