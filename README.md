@@ -2984,10 +2984,10 @@ Date:   Tue Sep 19 23:38:36 2023 -0500
 > clonaste el proyecto hace al menos dos meses - si lo clonaste más recientemente, sólo verás tu primera confirmación
 > local.
 
-### Referencias ancestrales
+### Referencias ancestrales: uso de ^ (Circunflejo)
 
 **La otra forma principal de especificar una confirmación es a través de su ascendencia**. Si colocas un
-**^ (circunflejo)** al final de una referencia, **Git la resuelve para referirse al padre de esa confirmación**.
+`^ (circunflejo) alt + 94` al final de una referencia, **Git la resuelve para referirse al padre de esa confirmación**.
 Supongamos que miras el historial de tu proyecto:
 
 ````bash
@@ -3032,3 +3032,71 @@ index 22fd0d8..86b5c9f 100644
 > **$ git show HEAD^^**    # OK<br>
 > **$ git show "HEAD^"**   # OK<br>
 
+### Referencias ancestrales: uso de ~ (virgulilla)
+
+La otra especificación de ascendencia principal es la `~ (virgulilla) alt+126`. **También se refiere al primer padre**,
+por lo que `HEAD~ y HEAD^ son equivalentes`. La diferencia se hace evidente cuando se especifica un número.
+**HEAD~2 significa "el primer padre del primer padre", o "el abuelo"** - recorre los primeros padres el número de
+veces que usted especifique. Por ejemplo, en la historia listada siguiente, HEAD~3 sería:
+
+````bash
+$ git lg
+* aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git show HEAD~3
+commit 4a1d91c02080430a3543a71c56e18309d15b909a
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 12:51:27 2023 -0500
+
+    C1 - Primer commit
+
+diff --git a/README.md b/README.md
+index 5873f96..22fd0d8 100644
+--- a/README.md
++++ b/README.md
+@@ -6,4 +6,5 @@ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+----
+\ No newline at end of file
++---
++Primer commit!
+\ No newline at end of fil
+````
+
+**Esto también se puede escribir** `HEAD~~~`, que de nuevo es el primer padre del primer padre del primer padre:
+
+````bash
+$ git lg
+* aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git show HEAD~~~
+commit 4a1d91c02080430a3543a71c56e18309d15b909a
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 12:51:27 2023 -0500
+
+    C1 - Primer commit
+
+diff --git a/README.md b/README.md
+index 5873f96..22fd0d8 100644
+--- a/README.md
++++ b/README.md
+@@ -6,4 +6,5 @@ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+----
+\ No newline at end of file
++---
++Primer commit!
+\ No newline at end of file
+````
