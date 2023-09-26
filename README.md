@@ -3621,3 +3621,120 @@ en el `working directory`. Los archivos que fueron agregados en los commits post
 colocados en estado `untracked`, mientras que los archivos que fueron agregados en commits anteriores al commit
 seleccionado son colocados en etado `modified`. Ojo, que en ambos casos están en el `Working Directory`.
 
+### Updating the Working Directory: --hard
+
+Si usas la opción `--hard`, continuará hasta esta etapa.
+
+- **Antes** de ejecutar el comando `git reset --hard <commit>`
+
+````bash
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+- **Ejecutando** el comando `git reset --hard <commit>`
+
+````bash
+$ git reset --hard ea59b00
+HEAD is now at ea59b00 C5 - Archivo PROJECT.md en main
+````
+
+- **Después** de ejecutar el comando `git reset --hard <commit>`
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main
+````
+
+**¿Qué ha pasado?**, ha deshecho todos los commits que van después del commit seleccionado, o sea ha deshecho los
+commits `b5252e7`, `faace87` y `b87af22`.
+
+**¿Y los archivos agregados o modificados que se hicieron en los commits eliminados?**, también se han deshecho. Es
+decir, los archivos agregados en los commits posteriores al commit seleccionado fueron eliminados, mientras que los
+archivos que ya existían antes del commit seleccionado y fueron modificados, pues su contenido se colocó en el estado
+en el que se encontraban en ese commit seleccionado.
+
+En resumen, con el comando `git reset --hard <commit>` git coloca el proyecto justo como se ha creado el commit
+seleccionado, **sin archivos** en el `staging area` o `working directory` como lo hacen el `--soft y --mixed`.
+
+**IMPORTANTE**
+> Es importante tener en cuenta que esta opción `--hard` **es la única manera de hacer que el comando reset SEA
+> PELIGROSO,** y uno de los pocos casos en los que Git realmente destruirá datos. **Cualquier otra invocación de reset
+> puede deshacerse fácilmente**, pero **la opción** `--hard` **NO**, ya que sobrescribe forzosamente los archivos
+> del directorio de trabajo.
+
+En este caso particular, **observemos nuestra base de datos de Git:**
+
+````bash
+$ git reflog
+ea59b00 (HEAD -> main, origin/main) HEAD@{0}: reset: moving to ea59b00
+b5252e7 HEAD@{1}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{2}: reset: moving to ea59b00
+b5252e7 HEAD@{3}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{4}: reset: moving to ea59b00
+b5252e7 HEAD@{5}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{6}: reset: moving to ea59b00
+b5252e7 HEAD@{7}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{8}: reset: moving to ea59b00
+b5252e7 HEAD@{9}: commit: C8 - modificación al main()
+faace87 HEAD@{10}: reset: moving to faace87
+ea59b00 (HEAD -> main, origin/main) HEAD@{11}: reset: moving to ea59b00
+faace87 HEAD@{12}: reset: moving to faace87
+ea59b00 (HEAD -> main, origin/main) HEAD@{13}: reset: moving to ea59b00
+faace87 HEAD@{14}: reset: moving to faace87
+...
+````
+
+Vemos que todavía tenemos nuestro commit `b5252e7 HEAD@{9}: commit: C8 - modificación al main()` y podríamos
+recuperarlo usando el comando `git reset --hard b5252e7`:
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main
+
+$ git reset --hard b5252e7
+HEAD is now at b5252e7 C8 - modificación al main()
+
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+Pero, si no lo hubiéramos confirmado, `Git habría sobreescrito el archivo y sería irrecuperable.`
