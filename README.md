@@ -3558,9 +3558,66 @@ el `staging area`, listos y preparados para que se les aplique un **commit**. Es
 anterior; al final, cuando hicimos un `git status` vemos que nuestro `staging area` tiene los archivos que se han
 trabajado en los commits eliminados.
 
-Hay 3 archivos como **new file** porque son archivos que fueron agregados en commits posteriores al commit seleccionado
-y existe solo un archivo como **modified** porque ese archivo fue agregado antes del commit seleccionado y en alguno
+Hay 3 archivos como `new file` porque son archivos que fueron agregados en commits posteriores al commit seleccionado
+y existe solo un archivo como `modified` porque ese archivo fue agregado antes del commit seleccionado y en alguno
 de los commits posteriores solo fue modificado.
 
+### Updating the Index: --mixed
 
+Si especificas la opción `--mixed`, **reset se detendrá en este punto. Este es también el valor por defecto**, así que
+si no especificas ninguna opción (sólo `git reset <commit>` en este caso), aquí es donde el comando se detendrá.
+
+- **Antes** de ejecutar el comando `git reset --mixed <commit>`
+
+````bash
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+- **Ejecutando** el comando `git reset --mixed <commit>`
+
+````bash
+$ git reset --mixed ea59b00
+Unstaged changes after reset:
+M       src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+````
+
+- **Después** de ejecutar el comando `git reset --mixed <commit>`
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git status
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+        src/main/java/com/magadiflo/git/github/app/services/
+````
+
+**¿Qué ha pasado?**, ha deshecho todos los commits que van después del commit seleccionado, o sea ha deshecho los
+commits `b5252e7`, `faace87` y `b87af22`.
+
+**¿Y los archivos agregados o modificados que se hicieron en los commits eliminados?**, estos archivos fueron colocados
+en el `working directory`. Los archivos que fueron agregados en los commits posteriores al commit seleccionado son
+colocados en estado `untracked`, mientras que los archivos que fueron agregados en commits anteriores al commit
+seleccionado son colocados en etado `modified`. Ojo, que en ambos casos están en el `Working Directory`.
 
