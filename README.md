@@ -3396,3 +3396,87 @@ Changes not staged for commit:
 Untracked files:
         src/main/java/com/magadiflo/git/github/app/controllers/
 ````
+
+### Limpieza del Working Directory
+
+Finalmente, puede que quisiéramos eliminar algunos archivos que están en nuestro `working directory`, para ello está
+el comando `git clean`.
+
+Algunas de las razones más comunes para limpiar tu directorio de trabajo pueden ser la eliminación de basura generada
+por fusiones o herramientas externas, o la eliminación de artefactos de compilación para ejecutar una compilación
+limpia.
+
+**Tendrá que ser muy cuidadoso con este comando, ya que está diseñado para eliminar archivos de su directorio de trabajo
+que no son rastreados.** Si cambias de opinión, a menudo no hay forma de recuperar el contenido de esos archivos.
+
+**Para eliminar todos los archivos sin seguimiento en tu directorio de trabajo**, puedes ejecutar `git clean -f -d`
+que **elimina cualquier archivo** y también **cualquier subdirectorio** que quede vacío como resultado. La
+`-f significa 'forzar'` o `hacer esto de verdad`, y es necesaria si la variable de configuración de Git
+`clean.requireForce` no está explícitamente en false.
+
+A continuación veamos cómo tenemos actualmente nuestro **working directory**. Observamos que tenemos el archivo
+**img.png** que está sin seguimiento (untracked), además tenemos un directorio **controllers/** que internamente tiene
+algún archivo que está sin seguimiento (untracked). Pero además, aunque no se observa, también tenemos creado un
+directorio llamado **/images** dentro del paquete principal de nuestro proyecto, y no se muestra en consola porque este
+directorio está vacío:
+
+````bash
+git status -s -b
+## experiment
+MM README.md
+?? src/img.png
+?? src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Si alguna vez quieres ver lo que haría, puedes ejecutar el comando con la opción `--dry-run` (o `-n`), que significa
+**"haz una ejecución en seco y dime qué habrías eliminado"**. Es decir, usando la opción `--dry-run` o `-n` veríamos
+que archivos o directorios podrían ser eliminados, **digamos que es como una vista previa de lo que se podrían
+eliminar.**
+
+En el siguiente ejemplo vemos que **podríamos eliminar el archivo** `img.png` del **working directory**:
+
+````bash
+$ git clean -f --dry-run
+Would remove src/img.png
+````
+
+Pero **si quisiéramos eliminar también los directorios que están sin seguimiento**, debemos agregarle el `-d`, pero
+antes, usar la opcion `--dry-run` o `-n` para ver qué cosas se podrían eliminar:
+
+````bash
+$ git clean -f -d --dry-run
+Would remove src/img.png
+Would remove src/main/java/com/magadiflo/git/github/app/controllers/
+Would remove src/main/java/com/magadiflo/git/github/app/images/
+````
+
+En el resultado anterior, vemos **todo lo que se podría eliminar: directorios y archivos.** Si nos fijamos, entre los
+resultados aparece el directorio **/images** que también podría ser eliminado.
+
+**NOTA**
+> Por defecto, el comando `git clean` **solo eliminará los archivos sin seguimiento que no estén ignorados.** Cualquier
+> archivo que coincida con un patrón en tu `.gitignore` u otros archivos ignorados no será eliminado.
+
+Procedemos a **eliminar los archivos y directorios sin seguimiento que no son ignorados:**
+
+````bash
+$ git clean -f -d
+Removing src/img.png
+Removing src/main/java/com/magadiflo/git/github/app/controllers/
+Removing src/main/java/com/magadiflo/git/github/app/images/
+````
+
+Verificamos el estado de nuestro **working directory** y vemos que tenemos solo el archivo **README.md** que ha
+estado siendo modificado, mientras que **los demás archivos y directorios sin seguimiento y no ignorados** fueron
+eliminados:
+
+````
+$ git status -s -b
+## experiment
+MM README.md
+````
+
+**IMPORTANTE**
+> Si no sabes lo que va a hacer el comando `git clean`, **ejecútalo siempre primero** con `--dry-run` o `-n` **para
+> comprobarlo** antes de cambiar -n por -f y hacerlo de verdad. 
+
