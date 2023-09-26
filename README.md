@@ -2509,7 +2509,7 @@ $ git lg
 
 7. En este punto, `magadiflo` quiere empujar todo este trabajo fusionado **"featureB"** de nuevo al servidor, pero no
    quiere simplemente empujar su propia rama featureB. Más bien, dado que `Alison` ya ha iniciado una rama **"
-   featureBee"**, `magadiflo` quiere empujar a esa rama, lo que hace con `git push -u origin featureB:featureBe`:
+   featureBee"**, `magadiflo` quiere empujar a esa rama, lo que hace con `git push -u origin featureB:featureBee`:
 
 ````bash
 $ git lg
@@ -2709,3 +2709,1032 @@ git lg
 |/
 * 85bbfdc C1 - Inicio del proyecto
 ````
+
+---
+
+## Git tools - Selección de revisión
+
+### Revisiones individuales
+
+Obviamente, puedes referirte a cualquier confirmación por su hash SHA-1 completo de 40 caracteres, pero también **hay
+formas más sencillas de referirse a los commits.** En esta sección se describen las distintas formas de referirse
+a cualquier confirmación.
+
+### SHA-1 corto
+
+Git es lo suficientemente inteligente como para averiguar a qué commit te estás refiriendo **si proporcionas los
+primeros caracteres del hash SHA-1**, siempre y cuando ese **hash parcial tenga al menos cuatro caracteres y no sea
+ambiguo**; es decir, ningún otro objeto de la base de datos de objetos puede tener un hash que empiece por el mismo
+prefijo.
+
+Por ejemplo, para **examinar un commit específico** en la que sabes que has añadido cierta funcionalidad, podrías
+ejecutar primero el comando git log para localizar la confirmación:
+
+````bash
+$ git log
+commit aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6 (HEAD -> main, origin/main, experiment)
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+...
+````
+
+En este caso, **digamos que estás interesado en el commit cuyo hash empieza por aad2f21...** Puedes **inspeccionar ese
+commit** con cualquiera de las siguientes variaciones de `git show` (asumiendo que las versiones más cortas no son
+ambiguas):
+
+````bash
+$ git show aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6
+$ git show aad2f21b4e2dcb3e4cf
+$ git show aad2f2
+````
+
+Ejecutar cualquiera de los tres comandos anteriores dará siempre el mismo resultado para el commit seleccionado:
+
+````bash
+commit aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6 (HEAD -> main, origin/main, experiment)
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+diff --git a/README.md b/README.md
+index 86b5c9f..6e7a02c 100644
+--- a/README.md
++++ b/README.md
+@@ -5,7 +5,7 @@
+ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y GitHub`. Esta práctica la estoy
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+-
++Cambio en la rama experiment
+ ---
+ Primer commit!
+ Cambio en la rama main
+\ No newline at end of file
+````
+
+**Git puede averiguar una abreviatura corta y única para tus valores SHA-1**. Si pasas `--abbrev-commit` al comando
+`git log`, la salida **usará valores más cortos,** pero **los mantendrá únicos**; por defecto usa siete caracteres, pero
+los hace más largos si es necesario para mantener el SHA-1 sin ambigüedades:
+
+````bash
+$ git log --abbrev-commit
+commit aad2f21 (HEAD -> main, origin/main, experiment)
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+commit c33b58a
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:38:36 2023 -0500
+
+    C3 - Commit de main
+....
+````
+
+Otra posibilidad es usar `--oneline`:
+
+````bash
+$ git log --oneline
+aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+c33b58a C3 - Commit de main
+6a7afa3 C2 - Segundo commit
+4a1d91c C1 - Primer commit
+104cb82 Inicio
+````
+
+### Referencias a ramas
+
+**Una forma directa de referirse a un commit en particular, es si ese commit está en la punta de una rama;** en ese
+caso, puedes simplemente **usar el nombre de la rama** en cualquier comando Git que espere una referencia a un commit.
+
+Por ejemplo, si **quieres examinar el objeto de la última confirmación en una rama**, los siguientes comandos son
+equivalentes, asumiendo que la rama `feature/git-branching` apunta al commit **d10c3ea...**. En el siguiente log
+vemos parte de un historial de commits, nos centraremos en el branch `feature/git-branching`:
+
+````bash
+| |/
+|/|
+* |   ceca1d6 (origin/release-3.0.0, release-3.0.0) Merge pull request #5 from magadiflo/feature/git-branching
+|\ \
+| * | d10c3ea (origin/feature/git-branching, feature/git-branching) Los peligros de rebasar
+| * | 6b3aeaf Rebasar (Rebasing)
+| * | 6565f00 Gestión de ramas. Cambiar nombre de una rama
+| * | 3dbdf42 Conflictos básicos de fusión (Basic Merge Conflicts)
+| * | 3044799 Fusión básica (Basic Merging)
+| * | e0700a8 Basic branching
+| * | 942d611 Basic branching
+| * | f0181bc Elimina referencia remota del repositorio lcal
+| * | 1b6ad86 Eliminar una rama en remoto
+| * | 25e41f8 Eliminar una rama en local
+| * | 1151c7e Cambiar rama
+| * | 5abaea2 Creando nueva rama
+|/ /
+| *   99110b6 (tag: v2.0.0) Merge pull request #4 from magadiflo/release-2.0.0
+| |\
+| |/
+````
+
+Podemos ver el commit `d10c3ea` de dos maneras, según se menciona:
+
+````bash
+$ git show d10c3ea
+commit d10c3eaa1481958b2a469b0036087f75d9918a20 (origin/feature/git-branching, feature/git-branching)
+Author: Martín <magadiflo@gmail.com>
+Date:   Wed Sep 20 00:15:27 2023 -0500
+
+    Los peligros de rebasar
+
+diff --git a/README.md b/README.md
+index 19d75d8..02b69e8 100644
+--- a/README.md
++++ b/README.md
+@@ -1887,3 +1887,13 @@ git lg
+ * 4a1d91c C1 - Primer commit
+ * 104cb82 Inicio
++
++### Los peligros de rebasar
++
++> - **No rebase commits que existen fuera de su repositorio** y en la que las personas pueden haber basado su trabajo.
++> - Recuerda que **solo debes ejecutar git rebase en un repositorio local.** Si el rebase se hace en el repositorio
+
++ remoto, entonces puede crear muchos problemas cuando otros desarrolladores intentan sacar los últimos cambios de
++ código del repositorio remoto.
+  +> - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
++
++
+````
+
+O como se menciona en el ejemplo, **como el commit anterior está en la punta de la rama**, podemos **usar el nombre de
+su rama** en vez de su código sha-1:
+
+````bash
+$ git show feature/git-branching
+commit d10c3eaa1481958b2a469b0036087f75d9918a20 (origin/feature/git-branching, feature/git-branching)
+Author: Martín <magadiflo@gmail.com>
+Date:   Wed Sep 20 00:15:27 2023 -0500
+
+    Los peligros de rebasar
+
+diff --git a/README.md b/README.md
+index 19d75d8..02b69e8 100644
+--- a/README.md
++++ b/README.md
+@@ -1887,3 +1887,13 @@ git lg
+ * 4a1d91c C1 - Primer commit
+ * 104cb82 Inicio
++
++### Los peligros de rebasar
++
++> - **No rebase commits que existen fuera de su repositorio** y en la que las personas pueden haber basado su trabajo.
++> - Recuerda que **solo debes ejecutar git rebase en un repositorio local.** Si el rebase se hace en el repositorio
++    remoto, entonces puede crear muchos problemas cuando otros desarrolladores intentan sacar los últimos cambios de
++    código del repositorio remoto.
+     +> - El `git rebase` altera el historial de commits, así que úsalo con cuidado.
++
++
+````
+
+Si quieres ver **a qué SHA-1 específico apunta una rama**:
+
+````bash
+$ git rev-parse feature/git-branching
+d10c3eaa1481958b2a469b0036087f75d9918a20
+````
+
+### RefLog Shortnames
+
+Una de las cosas que Git hace en segundo plano mientras estás trabajando es mantener un `reflog` - **un registro de
+dónde han estado tus referencias HEAD y de rama durante los últimos meses.**
+
+Puedes ver tu reflog usando `git reflog`:
+
+````bash
+$ git reflog
+aad2f21 (HEAD -> main, origin/main, experiment) HEAD@{0}: merge experiment: Fast-forward
+c33b58a HEAD@{1}: checkout: moving from experiment to main
+aad2f21 (HEAD -> main, origin/main, experiment) HEAD@{2}: rebase (finish): returning to refs/heads/experiment
+aad2f21 (HEAD -> main, origin/main, experiment) HEAD@{3}: rebase (pick): C4 - Cambio en experiment
+c33b58a HEAD@{4}: rebase (start): checkout main
+05cde4d HEAD@{5}: checkout: moving from main to experiment
+c33b58a HEAD@{6}: checkout: moving from experiment to main
+...
+````
+
+Cada vez que tu punta de rama se actualiza por cualquier motivo, **Git almacena esa información por ti en este historial
+temporal.** También **puedes utilizar tus datos reflog para referirte a commits anteriores.**
+
+Por ejemplo, si quieres ver el quinto valor anterior del HEAD de tu repositorio, puedes usar la referencia `@{5}` que
+ves en la salida de reflog:
+
+````bash
+$ git show HEAD@{5}
+commit 05cde4d429304accd65ff20db29a460d18543e26
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+diff --git a/README.md b/README.md
+index 22fd0d8..ddbc97f 100644
+--- a/README.md
++++ b/README.md
+@@ -5,6 +5,6 @@
+ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y GitHub`. Esta práctica la estoy
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+-
++Cambio en la rama experiment
+ ---
+ Primer commit!
+\ No newline at end of file
+````
+
+Para **ver la información de reflog formateada como la salida de git log**, puedes ejecutar `git log -g`:
+
+````bash
+$  git log -g main
+commit aad2f21b4e2dcb3e4cf7ae48330a5d63c35ce6c6 (HEAD -> main, origin/main, experiment)
+Reflog: main@{0} (Martín <magadiflo@gmail.com>)
+Reflog message: merge experiment: Fast-forward
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:39:14 2023 -0500
+
+    C4 - Cambio en experiment
+
+commit c33b58a00cf9f65675a9cc8844540ec788fdb27d
+Reflog: main@{1} (Martín <magadiflo@gmail.com>)
+Reflog message: commit: C3 - Commit de main
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:38:36 2023 -0500
+
+    C3 - Commit de main
+
+...
+````
+
+**NOTA**
+> Es importante tener en cuenta que **la información de reflog es estrictamente local - es un registro solo de lo que ha
+> hecho en su repositorio.** Las referencias no serán las mismas en la copia del repositorio de otra persona; además,
+> justo después de clonar inicialmente un repositorio, tendrás un reflog vacío, ya que aún no se ha producido ninguna
+> actividad en tu repositorio. Ejecutar git show HEAD@{2.months.ago} te mostrará la confirmación correspondiente solo si
+> clonaste el proyecto hace al menos dos meses - si lo clonaste más recientemente, sólo verás tu primera confirmación
+> local.
+
+### Referencias ancestrales: uso de ^ (Circunflejo)
+
+**La otra forma principal de especificar una confirmación es a través de su ascendencia**. Si colocas un
+`^ (circunflejo) alt + 94` al final de una referencia, **Git la resuelve para referirse al padre de esa confirmación**.
+Supongamos que miras el historial de tu proyecto:
+
+````bash
+$ git lg
+* aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+A continuación, puede ver la confirmación anterior especificando `HEAD^`, que significa `"el padre de HEAD"`:
+
+````bash
+$ git show HEAD^^
+commit c33b58a00cf9f65675a9cc8844540ec788fdb27d
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 23:38:36 2023 -0500
+
+    C3 - Commit de main
+
+diff --git a/README.md b/README.md
+index 22fd0d8..86b5c9f 100644
+--- a/README.md
++++ b/README.md
+@@ -7,4 +7,5 @@ realizando usando la documentación oficial de`Git` y el repositorio donde estoy
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+ ---
+-Primer commit!
+\ No newline at end of file
++Primer commit!
++Cambio en la rama main
+\ No newline at end of file
+````
+
+**NOTA**
+> **Escapar el ^ circunflejo en Windows**. En Windows, en cmd.exe, `^` es un carácter especial y debe tratarse de
+> forma diferente. Puede duplicarlo o poner la referencia de confirmación entre comillas:
+>
+> **$ git show HEAD^**     # will NOT work on Windows<br>
+> **$ git show HEAD^^**    # OK<br>
+> **$ git show "HEAD^"**   # OK<br>
+
+### Referencias ancestrales: uso de ~ (virgulilla)
+
+La otra especificación de ascendencia principal es la `~ (virgulilla) alt+126`. **También se refiere al primer padre**,
+por lo que `HEAD~ y HEAD^ son equivalentes`. La diferencia se hace evidente cuando se especifica un número.
+**HEAD~2 significa "el primer padre del primer padre", o "el abuelo"** - recorre los primeros padres el número de
+veces que usted especifique. Por ejemplo, en la historia listada siguiente, HEAD~3 sería:
+
+````bash
+$ git lg
+* aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git show HEAD~3
+commit 4a1d91c02080430a3543a71c56e18309d15b909a
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 12:51:27 2023 -0500
+
+    C1 - Primer commit
+
+diff --git a/README.md b/README.md
+index 5873f96..22fd0d8 100644
+--- a/README.md
++++ b/README.md
+@@ -6,4 +6,5 @@ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+----
+\ No newline at end of file
++---
++Primer commit!
+\ No newline at end of fil
+````
+
+**Esto también se puede escribir** `HEAD~~~`, que de nuevo es el primer padre del primer padre del primer padre:
+
+````bash
+$ git lg
+* aad2f21 (HEAD -> main, origin/main, experiment) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git show HEAD~~~
+commit 4a1d91c02080430a3543a71c56e18309d15b909a
+Author: Martín <magadiflo@gmail.com>
+Date:   Tue Sep 19 12:51:27 2023 -0500
+
+    C1 - Primer commit
+
+diff --git a/README.md b/README.md
+index 5873f96..22fd0d8 100644
+--- a/README.md
++++ b/README.md
+@@ -6,4 +6,5 @@ Este proyecto de Spring Boot 3, está creado netamente para practicar con `Git y
+ realizando usando la documentación oficial de`Git` y el repositorio donde estoy detallando los pasos seguidos es en
+ [git-github](https://github.com/magadiflo/git-github.git)
+
+----
+\ No newline at end of file
++---
++Primer commit!
+\ No newline at end of file
+````
+
+### Rangos de confirmación
+
+**Veamos cómo especificar rangos de confirmaciones.** Esto es particularmente útil para gestionar tus ramas - si tienes
+muchas ramas, puedes usar especificaciones de rangos para responder a preguntas
+como, `"¿Qué trabajo hay en esta rama que aún no he fusionado en mi rama main?"`
+
+### Doble punto ..
+
+**La especificación de rango más común es la sintaxis de doble punto.** Básicamente, pide a Git que resuelva un rango
+de confirmaciones que son alcanzables desde una confirmación pero no desde otra. Por ejemplo, digamos que tienes un
+historial de confirmaciones que se parece al ejemplo siguiente de historial para selección de rango.
+
+````bash
+$ git lg
+* d08ed69 (HEAD -> main) C8 - Modificación
+* 35a8f6e C7 - Modificación
+| * 66bb5a6 (experiment) C6 - Modificación
+| * c6a1b53 C5 - Modificación
+|/
+* aad2f21 (origin/main) C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+````
+
+Digamos que quieres ver **qué hay en tu rama experiment que aún no se ha fusionado en tu rama main**. Puedes pedirle a
+Git que te muestre un registro de solo aquellos commits con `main..experiment` - eso significa **"todos los commits
+accesibles desde experiment que no son accesibles desde main".**
+
+````bash
+$ git lg main..experiment
+* 66bb5a6 (experiment) C6 - Modificación
+* c6a1b53 C5 - Modificación
+````
+
+### Múltiples puntos
+
+La sintaxis de doble punto es útil como abreviatura, pero quizás quieras especificar más de dos ramas para indicar tu
+revisión, como por ejemplo ver qué commits hay en cualquiera de las varias ramas que no están en la rama en la que estás
+actualmente. Git te permite hacer esto utilizando el carácter ^ o --not antes de cualquier referencia de la que no
+quieras ver los commits alcanzables.
+
+Así, los tres comandos siguientes son equivalentes:
+
+````bash
+$ git log refA..refB
+$ git log ^refA refB
+$ git log refB --not refA
+````
+
+Esto es bueno porque con esta sintaxis puedes especificar más de dos referencias en tu consulta, lo que no puedes hacer
+con la sintaxis de doble punto. Por ejemplo, **si desea ver todas las confirmaciones accesibles desde refA o refB, pero
+no desde refC**, puede utilizar cualquiera de las dos:
+
+````bash
+$ git log refA refB ^refC
+$ git log refA refB --not refC
+````
+
+## Git tools - Stashing and Cleaning
+
+### Stashing and Cleaning (almacenamiento y limpieza)
+
+A menudo, cuando has estado trabajando en parte de tu proyecto, las cosas están en un estado desordenado y **quieres
+cambiar de rama un rato para trabajar en otra cosa**. El problema es que **no quieres hacer un commit** de trabajo
+a medio hacer sólo para poder volver a este punto más tarde. La respuesta a este problema es el comando `git stash`.
+
+`Stashing` toma el estado sucio de tu `working directory` - es decir, **tus archivos de seguimiento modificados y
+cambios en staged** - y lo guarda en una pila de cambios sin terminar que puedes volver a aplicar en cualquier momento
+**(incluso en una rama diferente).**
+
+**NOTA**: Migración a `git stash push`
+
+> Desde finales de octubre de 2017, ha habido una amplia discusión en la lista de correo de Git, en la que el comando
+> `git stash save` **está siendo obsoleto** en favor de la **alternativa** existente `git stash push`. La razón
+> principal de esto es que `git stash push` **introduce la opción de almacenar pathpecs seleccionados**, algo
+> que `git stash save` **no soporta.**
+
+### Stashing tu trabajo
+
+**Para demostrar el stashing**, entrarás en tu proyecto y empezarás a trabajar en un par de archivos y posiblemente
+agregues uno de ellos al **área de staging**. Si ejecutas `git status`, podrás ver tu estado sucio:
+
+````bash
+$ git status
+On branch experiment
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        modified:   src/main/resources/application.properties
+````
+
+**Ahora quieres cambiar de rama, pero no quieres confirmar todavía en lo que has estado trabajando**. Incluso si
+intentamos cambiar de rama sin hacer **commit** (porque no queremos hacer commit aún), git nos mostrará un error:
+
+````bash
+$ git checkout main
+error: Your local changes to the following files would be overwritten by checkout:
+        README.md
+Please commit your changes or stash them before you switch branches.
+Aborting
+````
+
+Entonces, lo que debemos hacer es almacenar (stash) los cambios. **Para insertar un nuevo stash en tu pila**,
+ejecuta `git stash` o `git stash push`:
+
+````bash       
+$ git stash push -m "HU-2 modificando clase principal y de propiedades"
+Saved working directory and index state On experiment: HU-2 modificando clase principal y de propiedades
+````
+
+Ahora puede ver que su **working directory** está limpio:
+
+````bash
+$ git status
+On branch experiment
+nothing to commit, working tree clean
+````
+
+**En este punto, puedes cambiar de rama y trabajar en otro sitio;** tus cambios se almacenan en tu pila. **Para ver qué
+stashes has almacenado**, puedes usar `git stash list`:
+
+````bash
+$ git stash list
+stash@{0}: On experiment: HU-2 modificando clase principal y de propiedades
+````
+
+**Puedes volver a aplicar el que acabas de almacenar** usando el comando que se muestra en la ayuda del comando stash
+original: `git stash apply`.
+
+````bash
+$ git stash apply
+On branch experiment
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+        modified:   src/main/resources/application.properties
+
+no changes added to commit (use "git add" and/or "git commit -a")
+````
+
+Puedes ver que Git re-modifica los archivos que revertiste cuando guardaste el stash. En este caso, tenías un directorio
+de trabajo limpio cuando intentaste aplicar el stash, e intentaste aplicarlo en la misma rama en la que lo guardaste.
+**Puedes guardar un stash en una rama, cambiar a otra rama más tarde, y tratar de volver a aplicar los cambios.**
+También puedes tener archivos modificados y no comprometidos en tu directorio de trabajo cuando apliques un stash -
+**Git te da conflictos de fusión si algo ya no se aplica limpiamente.**
+
+Los cambios en tus archivos se han re-aplicado, pero **el archivo que habías colocado** en el `área de staging` **no se
+ha vuelto a preparar**. Para ello, debes ejecutar el comando `git stash apply` con la opción `--index` para **indicarle
+al comando que intente re-aplicar los cambios escenificados**.
+
+En este caso, supongamos que aún no hemos aplicado los cambios que almacenamos en el **stash**, entonces, para poder
+recuperar todos esos cambios almacenados y **se restauren en su posición original**, ejecutamos:
+
+````bash
+git stash apply --index
+On branch experiment
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        modified:   src/main/resources/application.properties
+````
+
+**La opción apply solo intenta aplicar el trabajo almacenado** - usted **continúa teniéndolo en su pila**.
+**Para eliminarlo**, puedes ejecutar `git stash drop` **con el nombre del stash a eliminar:**
+
+````bash
+$ git stash list
+stash@{0}: On experiment: HU-2 modificando clase principal y de propiedades
+
+$ git stash drop stash@{0}
+Dropped stash@{0} (e52f7851999e82b70db2e91144316cdcc4230798)
+````
+
+**NOTA 1**
+> También puedes ejecutar `git stash pop` para aplicar el stash y luego eliminarlo inmediatamente de tu pila.
+
+**NOTA 2**
+> Si tenemos varios stashes almacenados en la pila, de forma predeterminada, **git aplicará el último stash creado**
+> `stash@{0}`. Ahora, si queremos aplicar un stash en específico debemos ser explícitos:
+> `git stash apply stash@{5} --index`
+
+### Stashing de archivos no rastreados
+
+Algo que podemos hacer con el **stash** es **almacenar los archivos no rastreados así como los rastreados.** Por
+defecto, `git stash` **solo almacena los archivos modificados y los archivos rastreados**.
+
+Si especificas `--include-untracked` o `-u`, **git incluirá los archivos sin seguimiento (untracked)** en el stash que
+se está creando.
+
+En el ejemplo siguiente tenemos tres archivos, uno está en el **staging area**, los otros dos están
+en el **working directory**, pero de estos últimos dos, uno está siendo rastreado por git y el otro no, es decir
+está en estado **untracked**:
+
+````bash
+$ git status
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Agregando el `--include-untracked` o `-u` podemos crear el stash incluyendo el archivo sin seguimiento **(untracked)**:
+
+````bash
+$ git stash push --include-untracked -m "HU-3 funcionalidad del controlador de producto"
+Saved working directory and index state On experiment: HU-3 funcionalidad del controlador de producto
+
+$ git stash list
+stash@{0}: On experiment: HU-3 funcionalidad del controlador de producto
+
+$ git status
+On branch experiment
+nothing to commit, working tree clean
+````
+
+En este punto, podemos cambiar de rama, hacer otras funcionalidades, etc.. Volvemos a nuestra rama `experiment` y
+recuperamos o aplicamos del stash, nuestros archivos almacenados:
+
+````bash
+$ git stash list
+stash@{0}: On experiment: HU-3 funcionalidad del controlador de producto
+
+$ git stash apply stash@{0} --index
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Como observamos en el ejemplo anterior, hemos recuperado tal cual nuestros archivos como lo habíamos dejado antes de
+crear el stash.
+
+### Stashing de archivos ignorados
+
+Sin embargo, **al incluir archivos sin seguimiento (untracked) en el stash no se incluirán los archivos ignorados
+explícitamente**; **para incluir adicionalmente los archivos ignorados (archivos que fueron definidos en el
+.gitignore)**, usa `--all` (o simplemente -a):
+
+````bash
+$ git status
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Luego de ver el estado en el que nos encontramos, utilizamos el `git stash push` con el `--all` para **crear el stash
+con los archivos ignorados, archivos con seguimiento (tracked) y archivos sin seguimiento (untracked):**
+
+````bash
+$ git stash push --all --m "Incluye archivos ignorados"
+warning: in the working copy of '.idea/workspace.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'HELP.md', LF will be replaced by CRLF the next time Git touches it
+Saved working directory and index state On experiment: Incluye archivos ignorados
+````
+
+Luego, podemos recuperar del stash, todos los archivos almacenados:
+
+````bash
+$ git stash apply stash@{0} --index
+Changes to be committed:
+        modified:   README.md
+
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+### Limpieza del Working Directory
+
+Finalmente, puede que quisiéramos eliminar algunos archivos que están en nuestro `working directory`, para ello está
+el comando `git clean`.
+
+Algunas de las razones más comunes para limpiar tu directorio de trabajo pueden ser la eliminación de basura generada
+por fusiones o herramientas externas, o la eliminación de artefactos de compilación para ejecutar una compilación
+limpia.
+
+**Tendrá que ser muy cuidadoso con este comando, ya que está diseñado para eliminar archivos de su directorio de trabajo
+que no son rastreados.** Si cambias de opinión, a menudo no hay forma de recuperar el contenido de esos archivos.
+
+**Para eliminar todos los archivos sin seguimiento en tu directorio de trabajo**, puedes ejecutar `git clean -f -d`
+que **elimina cualquier archivo** y también **cualquier subdirectorio** que quede vacío como resultado. La
+`-f significa 'forzar'` o `hacer esto de verdad`, y es necesaria si la variable de configuración de Git
+`clean.requireForce` no está explícitamente en false.
+
+A continuación veamos cómo tenemos actualmente nuestro **working directory**. Observamos que tenemos el archivo
+**img.png** que está sin seguimiento (untracked), además tenemos un directorio **controllers/** que internamente tiene
+algún archivo que está sin seguimiento (untracked). Pero además, aunque no se observa, también tenemos creado un
+directorio llamado **/images** dentro del paquete principal de nuestro proyecto, y no se muestra en consola porque este
+directorio está vacío:
+
+````bash
+git status -s -b
+## experiment
+MM README.md
+?? src/img.png
+?? src/main/java/com/magadiflo/git/github/app/controllers/
+````
+
+Si alguna vez quieres ver lo que haría, puedes ejecutar el comando con la opción `--dry-run` (o `-n`), que significa
+**"haz una ejecución en seco y dime qué habrías eliminado"**. Es decir, usando la opción `--dry-run` o `-n` veríamos
+que archivos o directorios podrían ser eliminados, **digamos que es como una vista previa de lo que se podrían
+eliminar.**
+
+En el siguiente ejemplo vemos que **podríamos eliminar el archivo** `img.png` del **working directory**:
+
+````bash
+$ git clean -f --dry-run
+Would remove src/img.png
+````
+
+Pero **si quisiéramos eliminar también los directorios que están sin seguimiento**, debemos agregarle el `-d`, pero
+antes, usar la opcion `--dry-run` o `-n` para ver qué cosas se podrían eliminar:
+
+````bash
+$ git clean -f -d --dry-run
+Would remove src/img.png
+Would remove src/main/java/com/magadiflo/git/github/app/controllers/
+Would remove src/main/java/com/magadiflo/git/github/app/images/
+````
+
+En el resultado anterior, vemos **todo lo que se podría eliminar: directorios y archivos.** Si nos fijamos, entre los
+resultados aparece el directorio **/images** que también podría ser eliminado.
+
+**NOTA**
+> Por defecto, el comando `git clean` **solo eliminará los archivos sin seguimiento que no estén ignorados.** Cualquier
+> archivo que coincida con un patrón en tu `.gitignore` u otros archivos ignorados no será eliminado.
+
+Procedemos a **eliminar los archivos y directorios sin seguimiento que no son ignorados:**
+
+````bash
+$ git clean -f -d
+Removing src/img.png
+Removing src/main/java/com/magadiflo/git/github/app/controllers/
+Removing src/main/java/com/magadiflo/git/github/app/images/
+````
+
+Verificamos el estado de nuestro **working directory** y vemos que tenemos solo el archivo **README.md** que ha
+estado siendo modificado, mientras que **los demás archivos y directorios sin seguimiento y no ignorados** fueron
+eliminados:
+
+````
+$ git status -s -b
+## experiment
+MM README.md
+````
+
+**IMPORTANTE**
+> Si no sabes lo que va a hacer el comando `git clean`, **ejecútalo siempre primero** con `--dry-run` o `-n` **para
+> comprobarlo** antes de cambiar -n por -f y hacerlo de verdad.
+
+## Desmitificación del Reset
+
+- El `HEAD`. HEAD **es el puntero a la referencia de la rama actual, que a su vez es un puntero al último commit
+  realizada en esa rama.** Esto significa que HEAD será el padre del siguiente commit que se cree. Generalmente, es más
+  sencillo pensar en **HEAD como la instantánea de tu último commit en esa rama.**
+- El `index`. El índice es tu próximo commit propuesto. **También nos hemos estado refiriendo a este concepto como el
+  "Staging Area"** de Git, ya que es lo que Git mira cuando ejecutas git commit.
+- El `Working Directory`. También conocido como **Árbol de trabajo**. Piensa en el **working directory** como una caja
+  de arena, donde puedes probar los cambios antes de enviarlos a tu **staging area (index)** y luego al historial.
+
+### El flujo de trabajo
+
+**El flujo de trabajo típico de Git** consiste en grabar instantáneas **(snapshots)** de tu proyecto en estados
+sucesivamente mejores, manipulando estos tres árboles.
+
+![reset-01.png](./assets/reset-01.png)
+
+### Move HEAD: --soft
+
+Lo primero que hará reset es mover la rama a la que apunta HEAD. Esto no es lo mismo que cambiar HEAD (que es lo que
+hace checkout); `reset` **mueve la rama a la que apunta HEAD. Esto significa que si HEAD está en la rama main**
+(es decir, estás actualmente en la rama main), ejecutar `git reset ea59b00` **empezará haciendo que main apunte
+a ea59b00.**
+
+No importa qué forma de reset con commit invoques, esto es lo primero que siempre intentará hacer. Ahora,
+con `reset --soft`, **simplemente se detendrá ahí.** Veamos su funcionamiento:
+
+- **Antes** de ejecutar el comando `git reset --soft <commit>`
+
+````bash
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+- **Ejecutando** el comando `git reset --soft <commit>`
+
+````bash
+$ git reset --soft ea59b00
+````
+
+- **Después** de ejecutar el comando `git reset --soft <commit>`
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git status
+Changes to be committed:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+        new file:   src/main/java/com/magadiflo/git/github/app/controllers/ProductController.java
+        new file:   src/main/java/com/magadiflo/git/github/app/services/IProductService.java
+        new file:   src/main/java/com/magadiflo/git/github/app/services/impl/ProductService.java
+````
+
+**¿Qué ha pasado?**, esencialmente ha deshecho todos los commits que van después del commit seleccionado, o sea
+ha deshecho los commits `b5252e7`, `faace87` y `b87af22`.
+
+**¿Y los archivos agregados o modificados que se hicieron en los commits eliminados?**, estos archivos son colocados en
+el `staging area`, listos y preparados para que se les aplique un **commit**. Esto se puede observar en el resultado
+anterior; al final, cuando hicimos un `git status` vemos que nuestro `staging area` tiene los archivos que se han
+trabajado en los commits eliminados.
+
+Hay 3 archivos como `new file` porque son archivos que fueron agregados en commits posteriores al commit seleccionado
+y existe solo un archivo como `modified` porque ese archivo fue agregado antes del commit seleccionado y en alguno
+de los commits posteriores solo fue modificado.
+
+### Updating the Index: --mixed
+
+Si especificas la opción `--mixed`, **reset se detendrá en este punto. Este es también el valor por defecto**, así que
+si no especificas ninguna opción (sólo `git reset <commit>` en este caso), aquí es donde el comando se detendrá.
+
+- **Antes** de ejecutar el comando `git reset --mixed <commit>`
+
+````bash
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+- **Ejecutando** el comando `git reset --mixed <commit>`
+
+````bash
+$ git reset --mixed ea59b00
+Unstaged changes after reset:
+M       src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+````
+
+- **Después** de ejecutar el comando `git reset --mixed <commit>`
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git status
+Changes not staged for commit:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+
+Untracked files:
+        src/main/java/com/magadiflo/git/github/app/controllers/
+        src/main/java/com/magadiflo/git/github/app/services/
+````
+
+**¿Qué ha pasado?**, ha deshecho todos los commits que van después del commit seleccionado, o sea ha deshecho los
+commits `b5252e7`, `faace87` y `b87af22`.
+
+**¿Y los archivos agregados o modificados que se hicieron en los commits eliminados?**, estos archivos fueron colocados
+en el `working directory`. Los archivos que fueron agregados en los commits posteriores al commit seleccionado son
+colocados en estado `untracked`, mientras que los archivos que fueron agregados en commits anteriores al commit
+seleccionado son colocados en etado `modified`. Ojo, que en ambos casos están en el `Working Directory`.
+
+### Updating the Working Directory: --hard
+
+Si usas la opción `--hard`, continuará hasta esta etapa.
+
+- **Antes** de ejecutar el comando `git reset --hard <commit>`
+
+````bash
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+- **Ejecutando** el comando `git reset --hard <commit>`
+
+````bash
+$ git reset --hard ea59b00
+HEAD is now at ea59b00 C5 - Archivo PROJECT.md en main
+````
+
+- **Después** de ejecutar el comando `git reset --hard <commit>`
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main
+````
+
+**¿Qué ha pasado?**, ha deshecho todos los commits que van después del commit seleccionado, o sea ha deshecho los
+commits `b5252e7`, `faace87` y `b87af22`.
+
+**¿Y los archivos agregados o modificados que se hicieron en los commits eliminados?**, también se han deshecho. Es
+decir, los archivos agregados en los commits posteriores al commit seleccionado fueron eliminados, mientras que los
+archivos que ya existían antes del commit seleccionado y fueron modificados, pues su contenido se colocó en el estado
+en el que se encontraban en ese commit seleccionado.
+
+En resumen, con el comando `git reset --hard <commit>` git coloca el proyecto justo como se ha creado el commit
+seleccionado, **sin archivos** en el `staging area` o `working directory` como lo hacen el `--soft y --mixed`.
+
+**IMPORTANTE**
+> Es importante tener en cuenta que esta opción `--hard` **es la única manera de hacer que el comando reset SEA
+> PELIGROSO,** y uno de los pocos casos en los que Git realmente destruirá datos. **Cualquier otra invocación de reset
+> puede deshacerse fácilmente**, pero **la opción** `--hard` **NO**, ya que sobrescribe forzosamente los archivos
+> del directorio de trabajo.
+
+En este caso particular, **observemos nuestra base de datos de Git:**
+
+````bash
+$ git reflog
+ea59b00 (HEAD -> main, origin/main) HEAD@{0}: reset: moving to ea59b00
+b5252e7 HEAD@{1}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{2}: reset: moving to ea59b00
+b5252e7 HEAD@{3}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{4}: reset: moving to ea59b00
+b5252e7 HEAD@{5}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{6}: reset: moving to ea59b00
+b5252e7 HEAD@{7}: reset: moving to b5252e7
+ea59b00 (HEAD -> main, origin/main) HEAD@{8}: reset: moving to ea59b00
+b5252e7 HEAD@{9}: commit: C8 - modificación al main()
+faace87 HEAD@{10}: reset: moving to faace87
+ea59b00 (HEAD -> main, origin/main) HEAD@{11}: reset: moving to ea59b00
+faace87 HEAD@{12}: reset: moving to faace87
+ea59b00 (HEAD -> main, origin/main) HEAD@{13}: reset: moving to ea59b00
+faace87 HEAD@{14}: reset: moving to faace87
+...
+````
+
+Vemos que todavía tenemos nuestro commit `b5252e7 HEAD@{9}: commit: C8 - modificación al main()` y podríamos
+recuperarlo usando el comando `git reset --hard b5252e7`:
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main
+
+$ git reset --hard b5252e7
+HEAD is now at b5252e7 C8 - modificación al main()
+
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+Pero, si no lo hubiéramos confirmado, `Git habría sobreescrito el archivo y sería irrecuperable.`
