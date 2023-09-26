@@ -1,9 +1,10 @@
-# [Git](https://git-scm.com/book/en/v2)
+# [Git](https://git-scm.com/book/en/v2) y GitHub
 
 ---
 
-Este proyecto está enfocado netamente en trabajar con los distintos `comandos de GIT`, para eso nos apoyaremos de esta
-aplicación de Spring Boot.
+En esta documentación vemos distintos comandos para trabajar con  `GIT` y en ciertos apartados usamos `GITHUB`.
+Ahora, para realizar las distintas ejecuciones de los comandos usé el repositorio
+[git-github-practice](https://github.com/magadiflo/git-github-practice.git)
 
 ---
 
