@@ -3478,5 +3478,89 @@ MM README.md
 
 **IMPORTANTE**
 > Si no sabes lo que va a hacer el comando `git clean`, **ejecútalo siempre primero** con `--dry-run` o `-n` **para
-> comprobarlo** antes de cambiar -n por -f y hacerlo de verdad. 
+> comprobarlo** antes de cambiar -n por -f y hacerlo de verdad.
+
+## Desmitificación del Reset
+
+- El `HEAD`. HEAD **es el puntero a la referencia de la rama actual, que a su vez es un puntero al último commit
+  realizada en esa rama.** Esto significa que HEAD será el padre del siguiente commit que se cree. Generalmente, es más
+  sencillo pensar en **HEAD como la instantánea de tu último commit en esa rama.**
+- El `index`. El índice es tu próximo commit propuesto. **También nos hemos estado refiriendo a este concepto como el
+  "Staging Area"** de Git, ya que es lo que Git mira cuando ejecutas git commit.
+- El `Working Directory`. También conocido como **Árbol de trabajo**. Piensa en el **working directory** como una caja
+  de arena, donde puedes probar los cambios antes de enviarlos a tu **staging area (index)** y luego al historial.
+
+### El flujo de trabajo
+
+**El flujo de trabajo típico de Git** consiste en grabar instantáneas **(snapshots)** de tu proyecto en estados
+sucesivamente mejores, manipulando estos tres árboles.
+
+![reset-01.png](./assets/reset-01.png)
+
+### Move HEAD: --soft
+
+Lo primero que hará reset es mover la rama a la que apunta HEAD. Esto no es lo mismo que cambiar HEAD (que es lo que
+hace checkout); `reset` **mueve la rama a la que apunta HEAD. Esto significa que si HEAD está en la rama main**
+(es decir, estás actualmente en la rama main), ejecutar `git reset ea59b00` **empezará haciendo que main apunte
+a ea59b00.**
+
+No importa qué forma de reset con commit invoques, esto es lo primero que siempre intentará hacer. Ahora,
+con `reset --soft`, **simplemente se detendrá ahí.** Veamos su funcionamiento:
+
+- **Antes** de ejecutar el comando `git reset --soft <commit>`
+
+````bash
+$ git lg
+* b5252e7 (HEAD -> main) C8 - modificación al main()
+* faace87 C7 - capa servicio
+* b87af22 C6 - Primer controlador
+* ea59b00 (origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git s
+## main...origin/main [ahead 3]
+````
+
+- **Ejecutando** el comando `git reset --soft <commit>`
+
+````bash
+$ git reset --soft ea59b00
+````
+
+- **Después** de ejecutar el comando `git reset --soft <commit>`
+
+````bash
+$ git lg
+* ea59b00 (HEAD -> main, origin/main) C5 - Archivo PROJECT.md en main
+* aad2f21 C4 - Cambio en experiment
+* c33b58a C3 - Commit de main
+* 6a7afa3 C2 - Segundo commit
+* 4a1d91c C1 - Primer commit
+* 104cb82 Inicio
+
+$ git status
+Changes to be committed:
+        modified:   src/main/java/com/magadiflo/git/github/app/GitGithubPracticeApplication.java
+        new file:   src/main/java/com/magadiflo/git/github/app/controllers/ProductController.java
+        new file:   src/main/java/com/magadiflo/git/github/app/services/IProductService.java
+        new file:   src/main/java/com/magadiflo/git/github/app/services/impl/ProductService.java
+````
+
+**¿Qué ha pasado?**, esencialmente ha deshecho todos los commits que van después del commit seleccionado, o sea
+ha deshecho los commits `b5252e7`, `faace87` y `b87af22`.
+
+**¿Y los archivos agregados o modificados que se hicieron en los commits eliminados?**, estos archivos son colocados en
+el `staging area`, listos y preparados para que se les aplique un **commit**. Esto se puede observar en el resultado
+anterior; al final, cuando hicimos un `git status` vemos que nuestro `staging area` tiene los archivos que se han
+trabajado en los commits eliminados.
+
+Hay 3 archivos como **new file** porque son archivos que fueron agregados en commits posteriores al commit seleccionado
+y existe solo un archivo como **modified** porque ese archivo fue agregado antes del commit seleccionado y en alguno
+de los commits posteriores solo fue modificado.
+
+
 
