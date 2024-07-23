@@ -243,20 +243,11 @@ index 8dea0e2..1c5d7a7 100644
 ````
 
 **NOTA 1**
-> `??`, indica que es un archivo nuevo que aún no está siendo rastreado.<br>
+> `??`, indica que es un archivo nuevo que aún no está siendo rastreado (`Untracked`).<br>
 > `A`, indica que es un nuevo archivo el que se ha agregado al staging area.<br>
-> `M`, indica que es un archivo modificado.<br>
+> `M`, indica que es un archivo modificado (`modified`).<br>
 
-**NOTA 2**
-> La columna de la **izquierda** indica el **estado del área de preparación** y la columna de la **derecha** indica el
-> estado del **working directory**.
->
-> En el resultado anterior observamos que el archivo `CONTRIBUTING.md` tiene una `M` en la columna derecha, lo que
-> indica que el archivo está en estado de preparación (staging area), mientras que el archivo `README.md` tiene la `M`
-> en la columna izquierda, lo que indica que ha sido modificado y está en el working directory.
-
-Si queremos ver lo que está en el `staging area` y que será incluido en el próximo commit, podemos usar el mismo comando
-anterior agregando `--staged`:
+Si queremos ver lo que está en el `staging area` y que será incluido en el próximo commit, podemos usar el mismo comando anterior agregando `--staged`:
 
 ````bash
 $ git diff --staged
