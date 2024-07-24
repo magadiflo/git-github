@@ -1084,13 +1084,17 @@ comunes para eliminar una etiqueta de un servidor remoto.
 
 ## Alias de Git
 
-Si no desea escribir el texto completo de cada uno de los comandos de Git, puede configurar fácilmente un alias para
-cada comando usando `git config`:
+Si no desea escribir el texto completo de cada uno de los comandos de Git, puede configurar fácilmente un alias para cada comando usando `git config`:
 
 ````bash
 $ git config --global alias.lg6 "log --oneline --decorate --all --graph -6"
+````
 
+Ahora, podemos listar las configuraciones globales y ver el alias creado:
+
+````bash
 $ git config --global --list
+
 core.editor="C:\Users\USUARIO\AppData\Local\Programs\Microsoft VS Code\bin\code" --wait
 user.name=Martín
 user.email=magadiflo@gmail.com
@@ -1106,12 +1110,22 @@ mergetool.sourcetree.cmd=''
 mergetool.sourcetree.trustexitcode=true
 ````
 
+Podemos filtrar los alias globales usando el siguiente comando:
+
+````bash
+$ git config --global --get-regexp alias
+
+alias.lg log --oneline --decorate --all --graph
+alias.s status -s -b
+alias.lg6 log --oneline --decorate --all --graph -6
+````
+
 Como observamos en el resultado anterior, hemos creado el alias `lg6` para mostrar el log de los últimos 6 commits y
-otras características más que le da las otras configuraciones colocadas. Podemos observar también que nuestro alias
+otras características más que le dan las otras configuraciones colocadas. Podemos observar también que nuestro alias
 ya está registrado en las configuraciones globales junto a otros alias creados previamente como el `lg`, `s`.
 
 Esto significa que, por ejemplo, en lugar de escribir `git log --oneline --decorate --all --graph -6`, solo
-necesitamos escribir `git lg6`:
+necesitamos escribir `git lg6`. Veamos una comparación al ejecutar ambos comandos, el resultado será el mismo:
 
 ````bash
 $ git log --oneline --decorate --all --graph -6
@@ -1132,6 +1146,72 @@ $ git lg6
 ````
 
 Como puede ver, **Git simplemente reemplaza el nuevo comando con el alias** que le haya asignado.
+
+### Eliminar un alias personalizado
+
+Primero listemos todas las configuraciones globales que tenemos. Observemos que tenemos 3 alias personalizados.
+
+````bash
+$ git config --global --list
+
+core.editor="C:\Users\USUARIO\AppData\Local\Programs\Microsoft VS Code\bin\code" --wait
+user.name=Martín
+user.email=magadiflo@gmail.com
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+filter.lfs.clean=git-lfs clean -- %f
+alias.lg=log --oneline --decorate --all --graph
+alias.s=status -s -b
+alias.lg6=log --oneline --decorate --all --graph -6
+difftool.sourcetree.cmd=''
+mergetool.sourcetree.cmd=''
+mergetool.sourcetree.trustexitcode=true
+````
+
+Recordemos, la otra forma de filtrar los alias globales:
+
+```bash
+$ git config --global --get-regexp alias
+
+alias.lg log --oneline --decorate --all --graph
+alias.s status -s -b
+alias.lg6 log --oneline --decorate --all --graph -6
+```
+
+Bueno, sabiendo los alias que tenemos registrados de manera global, eliminemos el alias `alias.lg6`.
+
+```bash
+$ git config --global --unset alias.lg6
+```
+
+Volvemos a listar los alias y verificamos que ya se ha eliminado
+
+```bash
+$ git config --global --list
+
+core.editor="C:\Users\USUARIO\AppData\Local\Programs\Microsoft VS Code\bin\code" --wait
+user.name=Martín
+user.email=magadiflo@gmail.com
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+filter.lfs.clean=git-lfs clean -- %f
+alias.lg=log --oneline --decorate --all --graph
+alias.s=status -s -b
+difftool.sourcetree.cmd=''
+mergetool.sourcetree.cmd=''
+mergetool.sourcetree.trustexitcode=true
+```
+
+O podemos listar utilizando la otra forma:
+
+```bash
+$ git config --global --get-regexp alias
+
+alias.lg log --oneline --decorate --all --graph
+alias.s status -s -b
+```
 
 ## Git Branching: Las ramas en pocas palabras
 
