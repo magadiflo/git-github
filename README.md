@@ -247,7 +247,8 @@ index 8dea0e2..1c5d7a7 100644
 > `A`, indica que es un nuevo archivo el que se ha agregado al staging area.<br>
 > `M`, indica que es un archivo modificado (`modified`).<br>
 
-Si queremos ver lo que está en el `staging area` y que será incluido en el próximo commit, podemos usar el mismo comando anterior agregando `--staged`:
+Si queremos ver lo que está en el `staging area` y que será incluido en el próximo commit, podemos usar el mismo comando
+anterior agregando `--staged`:
 
 ````bash
 $ git diff --staged
@@ -1084,7 +1085,8 @@ comunes para eliminar una etiqueta de un servidor remoto.
 
 ## Alias de Git
 
-Si no desea escribir el texto completo de cada uno de los comandos de Git, puede configurar fácilmente un alias para cada comando usando `git config`:
+Si no desea escribir el texto completo de cada uno de los comandos de Git, puede configurar fácilmente un alias para
+cada comando usando `git config`:
 
 ````bash
 $ git config --global alias.lg6 "log --oneline --decorate --all --graph -6"
@@ -2013,8 +2015,27 @@ blanco** que puedan molestar a otros desarrolladores.
 Como regla general, **tus mensajes deberían empezar con una sola línea de no más de 50 caracteres** que describa el
 conjunto de cambios de forma concisa, seguida de una línea en blanco, seguida de una explicación más detallada.
 
-Esta es una buena pauta a seguir. **Escribe tu mensaje de confirmación en imperativo:** `"Fix bug"` (corregir error) y
-`no "Fixed bug"` (error corregido) o `"Fixes bug"` (corrige error).
+### 📝 Cómo redactar mensajes de commit
+
+Una buena práctica es escribir los mensajes de commit en `modo imperativo`, es decir, **utilizando una forma verbal
+que expresa una instrucción u orden.**
+
+En español, por ejemplo, el infinitivo es *agregar*, mientras que el imperativo es *agrega*.
+> - `Infinitivo`: es el verbo en su forma básica, sin conjugar. Por ejemplo: escribir, agregar, cambiar, modificar.
+> - `Imperativo`: es una forma verbal que se utiliza para dar órdenes, instrucciones o indicaciones. Por ejemplo:
+    escribe, agrega, cambia, modifica.
+
+En inglés, la forma base del verbo también se utiliza para expresar el imperativo. Por eso, *Add* significa *«agrega»*
+cuando se utiliza como instrucción, aunque su forma coincida con la que asociamos al infinitivo en español.
+
+Ejemplos:
+
+- ✅ **Add product client** — Agrega el cliente de productos.
+- ❌ **Added product client** — Se agregó el cliente de productos.
+- ❌ **Adds product client** — Agrega el cliente de productos (presente, tercera persona).
+
+> `Regla práctica`: comienza el mensaje con un verbo en imperativo, como `Add`, `Fix`, `Update`, `Remove` o `Implement`.
+> Así, el mensaje describe la acción que introduce el commit.
 
 ### Equipo pequeño privado
 
@@ -3107,8 +3128,8 @@ index 22fd0d8..86b5c9f 100644
 ### Referencias ancestrales: uso de ~ (virgulilla)
 
 La otra especificación de ascendencia principal es la `~ (virgulilla) alt+126`. **También se refiere al primer padre**,
-por lo que `HEAD~ y HEAD^ son equivalentes`. La diferencia se hace evidente cuando se especifica un número.
-**HEAD~2 significa "el primer padre del primer padre", o "el abuelo"** - recorre los primeros padres el número de
+por lo que `HEAD~ y HEAD^ son equivalentes`. La diferencia se hace evidente cuando se especifica un número. **HEAD~2
+significa "el primer padre del primer padre", o "el abuelo"** - recorre los primeros padres el número de
 veces que usted especifique. Por ejemplo, en la historia listada siguiente, HEAD~3 sería:
 
 ````bash
@@ -3349,8 +3370,8 @@ Changes not staged for commit:
         modified:   src/main/resources/application.properties
 ````
 
-**La opción apply solo intenta aplicar el trabajo almacenado** - usted **continúa teniéndolo en su pila**.
-**Para eliminarlo**, puedes ejecutar `git stash drop` **con el nombre del stash a eliminar:**
+**La opción apply solo intenta aplicar el trabajo almacenado** - usted **continúa teniéndolo en su pila**. **Para
+eliminarlo**, puedes ejecutar `git stash drop` **con el nombre del stash a eliminar:**
 
 ````bash
 $ git stash list
@@ -3500,8 +3521,8 @@ MM README.md
 ?? src/main/java/com/magadiflo/git/github/app/controllers/
 ````
 
-Si alguna vez quieres ver lo que haría, puedes ejecutar el comando con la opción `--dry-run` (o `-n`), que significa
-**"haz una ejecución en seco y dime qué habrías eliminado"**. Es decir, usando la opción `--dry-run` o `-n` veríamos
+Si alguna vez quieres ver lo que haría, puedes ejecutar el comando con la opción `--dry-run` (o `-n`), que significa **"
+haz una ejecución en seco y dime qué habrías eliminado"**. Es decir, usando la opción `--dry-run` o `-n` veríamos
 que archivos o directorios podrían ser eliminados, **digamos que es como una vista previa de lo que se podrían
 eliminar.**
 
@@ -3815,23 +3836,31 @@ Pero, si no lo hubiéramos confirmado, `Git habría sobreescrito el archivo y se
 
 ## [Git Revert](https://www.freecodecamp.org/espanol/news/la-guia-definitiva-para-git-reset-y-git-revert/)
 
-Ambos comandos `git revert` y `git reset`, deshacen commits anteriores. Pero `si ya has subido tu commit a un repositorio remoto`, se recomienda que `no uses git reset`, ya que reescribe el historial de commits. Esto puede hacer que trabajar en un repositorio con otros desarrolladores y mantener un historial consistente de commits sea muy difícil.
+Ambos comandos `git revert` y `git reset`, deshacen commits anteriores. Pero
+`si ya has subido tu commit a un repositorio remoto`, se recomienda que `no uses git reset`, ya que reescribe el
+historial de commits. Esto puede hacer que trabajar en un repositorio con otros desarrolladores y mantener un historial
+consistente de commits sea muy difícil.
 
-En su lugar es mejor usar `git revert`, que deshace los cambios realizados por un commit anterior `creando un commit completamente nuevo`, todo esto sin alterar el historial de commits.
+En su lugar es mejor usar `git revert`, que deshace los cambios realizados por un commit anterior
+`creando un commit completamente nuevo`, todo esto sin alterar el historial de commits.
 
-`Git revert` es similar a `git reset`, pero el enfoque es ligeramente diferente. En lugar de eliminar todos los commit a su paso, la reversión `SÓLO deshace un único commit`, devolviéndote a los archivos organizados antes del commit.
+`Git revert` es similar a `git reset`, pero el enfoque es ligeramente diferente. En lugar de eliminar todos los commit a
+su paso, la reversión `SÓLO deshace un único commit`, devolviéndote a los archivos organizados antes del commit.
 
-Así, en lugar de eliminar un commit, `git revert` invierte los cambios introducidos por el commit original creando un nuevo commit con el contenido inverso subyacente. Esta es una forma segura de revocar un commit porque evita que pierdas tu historial. 
+Así, en lugar de eliminar un commit, `git revert` invierte los cambios introducidos por el commit original creando un
+nuevo commit con el contenido inverso subyacente. Esta es una forma segura de revocar un commit porque evita que pierdas
+tu historial.
 
-Es importante saber que la reversión no tendrá efecto a menos que se especifique el hash o la referencia del commit. 
+Es importante saber que la reversión no tendrá efecto a menos que se especifique el hash o la referencia del commit.
 
-Ejemplo. Imaginemos la siguiente situación: 
+Ejemplo. Imaginemos la siguiente situación:
 
-1. Estás trabajando en un archivo y añades y haces commit a tus cambios. 
-2. A continuación trabajas en otras cosas y haces algunos commits más. 
+1. Estás trabajando en un archivo y añades y haces commit a tus cambios.
+2. A continuación trabajas en otras cosas y haces algunos commits más.
 3. Ahora te das cuenta de que, hace tres o cuatro commits, hiciste algo que te gustaría deshacer - ¿cómo puedes hacerlo?
 
-Podrías pensar, simplemente usa `git reset`, pero esto eliminará todos los commits después del que quieres cambiar - ¡`git revert` al rescate! Veamos este ejemplo:
+Podrías pensar, simplemente usa `git reset`, pero esto eliminará todos los commits después del que quieres cambiar - ¡
+`git revert` al rescate! Veamos este ejemplo:
 
 Iniciamos creando un repositorio local para nuestro ejemplo:
 
@@ -3852,6 +3881,7 @@ Start
 $ git add .
 $ git commit -m "Add Start"
 ```
+
 Creamos un nuevo archivo con su contendio para este segundo commit.
 
 ```bash
@@ -3913,7 +3943,8 @@ $ cat wrong.txt
 WRONG
 ```
 
-Ahora, nos damos cuenta de que queremos `deshacer` el commit con el texto `WRONG`. **Vamos a revertir**. Podemos usar el `SHA` del commit que queremos deshacer, en nuestro caso será el `453e5aa`.
+Ahora, nos damos cuenta de que queremos `deshacer` el commit con el texto `WRONG`. **Vamos a revertir**. Podemos usar el
+`SHA` del commit que queremos deshacer, en nuestro caso será el `453e5aa`.
 
 Ejecutamos el comando siguiente junto al sha que queremos revertir.
 
@@ -3922,9 +3953,12 @@ $ git revert 453e5aa
 hint: Waiting for your editor to close the file...
 ```
 
-Al ejecutar `git revert <commit>`, Git genera automáticamente un nuevo commit que aplica los cambios opuestos al commit especificado. Es decir, si el commit introdujo un conjunto de cambios, git revert creará un commit que deshace esos mismos cambios.
+Al ejecutar `git revert <commit>`, Git genera automáticamente un nuevo commit que aplica los cambios opuestos al commit
+especificado. Es decir, si el commit introdujo un conjunto de cambios, git revert creará un commit que deshace esos
+mismos cambios.
 
-A continuación se nos abrirá el editor que estemos usando de git, en mi caso se abrirá VSC, donde me pedirá que agregue un mensaje para el nuevo commit que se creará.
+A continuación se nos abrirá el editor que estemos usando de git, en mi caso se abrirá VSC, donde me pedirá que agregue
+un mensaje para el nuevo commit que se creará.
 
 ```bash
 Revert "Add WRONG to wrong.txt (Este cambio fue revertido)"
@@ -3940,7 +3974,8 @@ This reverts commit 453e5aaff549723edccf1f885f431412e53ac7be.
 #
 ```
 
-Luego de agregar un mensaje adecuado, guardamos los cambios y cerramos el editor. A continuación vamos a la consola y vemos que hemos vuelto a tener el control del mismo, además se nos muestra información sobre lo que acabamos de hacer.
+Luego de agregar un mensaje adecuado, guardamos los cambios y cerramos el editor. A continuación vamos a la consola y
+vemos que hemos vuelto a tener el control del mismo, además se nos muestra información sobre lo que acabamos de hacer.
 
 ```bash
 $ git revert 453e5aa
@@ -3949,9 +3984,12 @@ $ git revert 453e5aa
  delete mode 100644 wrong.txt
 ```
 
-Recordemos que lo que hicimos en el commit que acabamos de revertir fue crear un archivo llamado `wrong.txt` y agregarle el texto `WRONG`. Ahora, como lo acabamos de revertir, eso significa que dichos cambios ahora aparecen revertidos en el nuevo commit que se ha creado producto de la reversión que hicimos.
+Recordemos que lo que hicimos en el commit que acabamos de revertir fue crear un archivo llamado `wrong.txt` y agregarle
+el texto `WRONG`. Ahora, como lo acabamos de revertir, eso significa que dichos cambios ahora aparecen revertidos en el
+nuevo commit que se ha creado producto de la reversión que hicimos.
 
-Entonces, si vemos el historial de commits, luego de haber realizado el revert, vemos que se nos agregó un nuevo commit, este nuevo commit contiene los cambios revertidos del commit que seleccionamos. 
+Entonces, si vemos el historial de commits, luego de haber realizado el revert, vemos que se nos agregó un nuevo commit,
+este nuevo commit contiene los cambios revertidos del commit que seleccionamos.
 
 ```bash
 $ git lg
@@ -3961,16 +3999,21 @@ $ git lg
 * 453e5aa Add WRONG to wrong.txt
 * b98567b Add Start
 ```
-En otras palabras, luego de haber realizado el revert del commit `453e5aa`, los cambios que hicimos en dicho commit es como si nunca los hubiéramos realizado, es decir, como si nunca hubiéramos agregado el archivo `wrong.txt`. Eso lo podemos comprobar listando los arhivos actuales del repositorio.
+
+En otras palabras, luego de haber realizado el revert del commit `453e5aa`, los cambios que hicimos en dicho commit es
+como si nunca los hubiéramos realizado, es decir, como si nunca hubiéramos agregado el archivo `wrong.txt`. Eso lo
+podemos comprobar listando los arhivos actuales del repositorio.
 
 ```
 $ ls
 first.txt
 ```
 
-Una explicación adicional para comprender mejor este tema es por ejemplo, si hacemos `git show` del nuevo commit y del commit que hemos revertido entenderemos mejor el uso del `git revert`.
+Una explicación adicional para comprender mejor este tema es por ejemplo, si hacemos `git show` del nuevo commit y del
+commit que hemos revertido entenderemos mejor el uso del `git revert`.
 
-El commit que revertimos tenía un archivo nuevo creado llamado `wrong.txt` y al que se le agregó el texto `WRONG`. Nótese el `+WRONG` del resultado inferior que indica que se agregó dicho texto.
+El commit que revertimos tenía un archivo nuevo creado llamado `wrong.txt` y al que se le agregó el texto `WRONG`.
+Nótese el `+WRONG` del resultado inferior que indica que se agregó dicho texto.
 
 ```bash
 $ git show 453e5aa
@@ -3989,7 +4032,9 @@ index 0000000..e738caa
 +WRONG
 ```
 
-El nuevo commit que generamos con el revert contiene lo contrario al commit anterior. Es decir, aquí estamos eliminando el archivo `wrong.txt` y obviamente su contenido `WRONG`. Nótese el `-WRONG` del resultado inferior que indica que el texto fue eliminado, dado que el archivo también fue eliminado.
+El nuevo commit que generamos con el revert contiene lo contrario al commit anterior. Es decir, aquí estamos eliminando
+el archivo `wrong.txt` y obviamente su contenido `WRONG`. Nótese el `-WRONG` del resultado inferior que indica que el
+texto fue eliminado, dado que el archivo también fue eliminado.
 
 ```bash
 $ git show a4553c6
@@ -4012,4 +4057,6 @@ index e738caa..0000000
 
 **IMPORTANTE**
 
-> Notar que el historial de commit no ha sido alterado, solo hemos agregado un nuevo commit reflejando la eliminación del `wrong.txt`. Eso no pasa con el comando `git reset`, quien sí altera el historial de commits, dado que los elimina.
+> Notar que el historial de commit no ha sido alterado, solo hemos agregado un nuevo commit reflejando la eliminación
+> del `wrong.txt`. Eso no pasa con el comando `git reset`, quien sí altera el historial de commits, dado que los
+> elimina.
